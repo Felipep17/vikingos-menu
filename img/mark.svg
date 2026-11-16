@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Vikingos">
+  <defs>
+    <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#F7C873"/>
+      <stop offset="1" stop-color="#D98E2B"/>
+    </linearGradient>
+  </defs>
+  <circle cx="120" cy="120" r="116" fill="#102A3F"/>
+  <circle cx="120" cy="120" r="104" fill="none" stroke="url(#gold)" stroke-width="3"/>
+  <circle cx="120" cy="120" r="97" fill="none" stroke="#F7C873" stroke-opacity=".25" stroke-width="1.5" stroke-dasharray="2 6"/>
+  <g fill="url(#gold)">
+    <!-- ala izquierda -->
+    <path d="M78 128 C58 126 36 116 26 92 C38 98 48 99 56 97 C44 90 36 78 34 62 C46 72 58 76 68 76 C62 68 60 56 62 42 C74 62 82 86 86 112 Z"/>
+    <!-- ala derecha -->
+    <path d="M162 128 C182 126 204 116 214 92 C202 98 192 99 184 97 C196 90 204 78 206 62 C194 72 182 76 172 76 C178 68 180 56 178 42 C166 62 158 86 154 112 Z"/>
+    <!-- cúpula del casco -->
+    <path d="M78 136 C78 92 96 70 120 70 C144 70 162 92 162 136 Z"/>
+    <!-- banda -->
+    <rect x="72" y="132" width="96" height="18" rx="4"/>
+    <!-- nasal -->
+    <path d="M113 140 H127 V178 L120 190 L113 178 Z"/>
+  </g>
+  <g fill="#102A3F">
+    <rect x="117.5" y="74" width="5" height="58" rx="2"/>
+    <circle cx="84" cy="141" r="3"/><circle cx="99" cy="141" r="3"/>
+    <circle cx="141" cy="141" r="3"/><circle cx="156" cy="141" r="3"/>
+    <circle cx="120" cy="160" r="2.5"/>
+  </g>
+</svg>
