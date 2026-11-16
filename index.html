@@ -104,7 +104,13 @@
   .price{font-weight:800;font-size:19px;font-variant-numeric:tabular-nums;white-space:nowrap;display:block;margin-top:10px}
   .cur{font-size:12px;font-weight:700;color:var(--muted);margin-left:3px;letter-spacing:.04em}
   .thumb{width:112px;height:112px;border-radius:12px;overflow:hidden;background:#111;align-self:start}
+  .thumb{position:relative}
   .thumb img{width:100%;height:100%;object-fit:cover}
+  .vbadge{position:absolute;left:6px;top:6px;display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:99px;background:rgba(15,37,55,.85);color:#fff;font-size:12px;font-weight:800}
+  .d-img.video{aspect-ratio:4/5;max-height:62dvh;margin:0 auto;width:100%}
+  .d-img video{width:100%;height:100%;object-fit:cover;display:block;background:#111}
+  .d-img{position:relative}
+  .snd{position:absolute;left:10px;bottom:10px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(15,37,55,.8);color:#fff}
   .add{position:absolute;right:10px;top:100px;min-width:44px;height:44px;padding:0 12px;display:flex;align-items:center;justify-content:center;gap:6px;border-radius:99px;background:var(--navy);color:#fff;font-weight:800;font-size:15px;box-shadow:0 4px 12px rgba(15,37,55,.3);transition:transform .15s var(--ease)}
   .add:active{transform:scale(.94)}
   .add .q{min-width:20px;height:20px;border-radius:99px;background:var(--amber);color:var(--navy);font-size:13px;display:grid;place-items:center;padding:0 5px}
@@ -331,8 +337,8 @@ const MENU = [
   ]},
   { id:"salchipapas", name:"Salchipapas", note:"Gratinadas con queso fundido.", tile:"img/cat-salchipapas.webp", items:[
     { id:"s1", name:"Salchipapa gratinada sencilla", desc:"Papa a la francesa con salchicha, gratinada con queso y salsas.", price:12000, img:"img/salchi_sencilla" },
-    { id:"s2", name:"Salchipapa gratinada con pollo", desc:"Papa a la francesa con salchicha y pollo, gratinada con queso y salsas.", price:16000, img:"img/salchi_pollo" },
-    { id:"s3", name:"Costipapa gratinada + bebida", desc:"Papa a la francesa con costilla, gratinada con queso y salsas.", inc:"1 bebida", price:20000, img:"img/costipapa" },
+    { id:"s2", name:"Salchipapa gratinada con pollo", desc:"Papa a la francesa con salchicha y pollo, gratinada con queso y salsas.", price:16000, img:"img/salchi_pollo", video:["video/salchipapa-pollo.mp4"], poster:"video/salchipollo-real-poster.webp" },
+    { id:"s3", name:"Costipapa gratinada + bebida", desc:"Papa a la francesa con costilla, gratinada con queso y salsas.", inc:"1 bebida", price:20000, img:"img/costipapa", video:["video/costipapa-1.mp4","video/costipapa-2.mp4"], poster:"video/costipapa-real-poster.webp" },
   ]},
   { id:"bebidas", name:"Bebidas", note:"Bien frías.", tile:"img/cat-bebidas.webp", items:[
     { id:"b1", name:"Coronita", desc:"Cerveza Corona Extra, botella de 210 ml.", price:5000, img:"img/corona", contain:true },
@@ -372,7 +378,7 @@ $("#menu").innerHTML = MENU.map(c => `
             ${it.inc ? `<p class="inc"><b>Incluye:</b> ${esc(it.inc)}</p>` : ""}
             <span class="price">${fmt(it.price)}<span class="cur">COP</span></span>
           </div>
-          <div class="thumb"><img src="${it.img}-sq.webp" alt="" width="360" height="360" loading="lazy" decoding="async"></div>
+          <div class="thumb"><img src="${it.img}-sq.webp" alt="" width="360" height="360" loading="lazy" decoding="async">${it.video ? `<span class="vbadge"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4.5v15l13-7.5z"/></svg>Video</span>` : ""}</div>
         </button>
         <button class="add" type="button" data-add="${it.id}" aria-label="Agregar ${esc(it.name)}">${plus}</button>
       </li>`).join("")}
@@ -415,11 +421,32 @@ function refresh(bump){
 
 let tt; function toast(msg){ const t = $("#toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("on"), 2600); }
 
+/* ===== Foto o video en el detalle ===== */
+const mute = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="m22 9-6 6M16 9l6 6"/></svg>';
+const unmute = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M19 5a10 10 0 0 1 0 14"/></svg>';
+function showMedia(it){
+  const box = $("#d-img");
+  box.classList.toggle("contain", !!it.contain);
+  box.classList.toggle("video", !!it.video);
+  if (!it.video) { box.innerHTML = `<img alt="" src="${it.img}.webp">`; return; }
+  let k = 0;
+  box.innerHTML = `<video muted playsinline autoplay preload="metadata" poster="${it.poster}" aria-label="Video de ${esc(it.name)}"></video><button class="snd" type="button" aria-label="Activar sonido" aria-pressed="false">${mute}</button>`;
+  const v = box.querySelector("video"), snd = box.querySelector(".snd");
+  const play = () => { v.src = it.video[k]; v.play().catch(() => {}); };
+  v.addEventListener("ended", () => { k = (k + 1) % it.video.length; play(); });
+  snd.addEventListener("click", () => {
+    v.muted = !v.muted; snd.innerHTML = v.muted ? mute : unmute;
+    snd.setAttribute("aria-label", v.muted ? "Activar sonido" : "Silenciar"); snd.setAttribute("aria-pressed", String(!v.muted));
+  });
+  if (reduce()) { v.removeAttribute("autoplay"); v.src = it.video[0]; v.controls = true; } else play();
+}
+const stopMedia = () => { const v = $("#d-img video"); if (v) { v.pause(); v.removeAttribute("src"); v.load(); } };
+
 /* ===== Detalle de producto ===== */
 const sheet = $("#sheet"); let cur = null, qty = 1, lastFocus = null;
 function openItem(id){
   cur = ITEMS[id]; qty = 1; lastFocus = document.activeElement;
-  const box = $("#d-img"); box.classList.toggle("contain", !!cur.contain); box.querySelector("img").src = cur.img + ".webp";
+  showMedia(cur);
   $("#d-name").textContent = cur.name;
   $("#d-desc").textContent = cur.desc;
   $("#d-inc").innerHTML = cur.inc ? `<b>Incluye:</b> ${esc(cur.inc)}` : ""; $("#d-inc").hidden = !cur.inc;
@@ -519,7 +546,7 @@ $("#sendWa").addEventListener("click", () => {
 document.querySelectorAll("dialog").forEach(d => {
   d.querySelector("[data-close]").addEventListener("click", () => d.close());
   d.addEventListener("click", e => { if (e.target === d) d.close(); });
-  d.addEventListener("close", () => { if (lastFocus && document.contains(lastFocus)) lastFocus.focus({preventScroll:true}); });
+  d.addEventListener("close", () => { if (d.id === "sheet") stopMedia(); if (lastFocus && document.contains(lastFocus)) lastFocus.focus({preventScroll:true}); });
   new MutationObserver(() => document.body.classList.toggle("locked", !!document.querySelector("dialog[open]"))).observe(d, {attributes:true, attributeFilter:["open"]});
 });
 $("#openCart").addEventListener("click", () => { lastFocus = $("#openCart"); });
