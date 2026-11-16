@@ -4,362 +4,577 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Vikingos Bar and Food · Menú</title>
-<meta name="description" content="Menú de Vikingos Bar and Food: combos de alitas, salchipapas gratinadas y bebidas.">
+<meta name="description" content="Menú de Vikingos Bar and Food: alitas en BBQ o miel mostaza, salchipapas gratinadas y bebidas. Pide por WhatsApp.">
 <meta name="theme-color" content="#0F2537">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Vikingos Bar and Food · Menú">
-<meta property="og:description" content="Combos de alitas, salchipapas gratinadas y bebidas.">
+<meta property="og:description" content="Alitas en BBQ o miel mostaza, salchipapas gratinadas y bebidas. Pide por WhatsApp.">
 <meta property="og:image" content="https://felipep17.github.io/vikingos-menu/img/og.webp">
 <link rel="icon" type="image/svg+xml" href="img/mark.svg">
 <link rel="apple-touch-icon" href="img/apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="preload" as="image" href="img/hero.webp">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..900&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="img/cover.webp">
 <style>
   :root{
-    /* Paleta "Fiordo y ámbar" */
-    --ink:#0F2537;          /* azul fiordo: texto principal, superficies de marca */
-    --ink-2:#1B3A52;
-    --bone:#F6F1E8;         /* fondo */
-    --paper:#FFFDF9;        /* tarjetas */
-    --sand:#EAE1D2;         /* bordes y divisores */
-    --muted:#5A6672;        /* texto secundario (5.6:1 sobre bone) */
-    --amber:#F0A63A;        /* acento */
-    --amber-2:#D98A1F;
-    --amber-soft:#FCEBCB;
-    --gold-grad:linear-gradient(180deg,#F7C873,#D98E2B);
-    --radius:20px;
-    --shadow:0 1px 2px rgba(15,37,55,.06),0 8px 24px -12px rgba(15,37,55,.18);
-    --ease-out:cubic-bezier(.22,1,.36,1);
-    --display:"Big Shoulders Display",Impact,sans-serif;
-    --sans:Manrope,system-ui,-apple-system,sans-serif;
+    --navy:#0F2537; --navy-2:#173450;
+    --bg:#F4F1EC; --paper:#FFFFFF; --line:#E4DED4;
+    --text:#14202B; --muted:#5D6873;
+    --amber:#F0A63A; --amber-ink:#8A4F06;
+    --bbq:#6E2A12; --mostaza:#E2A12A;
+    --wa:#128C4A;
+    --font:Archivo,system-ui,-apple-system,sans-serif;
+    --ease:cubic-bezier(.22,1,.36,1);
   }
   *{box-sizing:border-box;margin:0;padding:0}
-  html{scroll-behavior:smooth;scroll-padding-top:76px;-webkit-text-size-adjust:100%}
-  body{background:var(--bone);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100dvh}
+  html{-webkit-text-size-adjust:100%}
+  body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
   img{display:block;max-width:100%}
-  a{color:inherit}
-  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer;touch-action:manipulation}
-  :focus-visible{outline:3px solid var(--amber-2);outline-offset:3px;border-radius:8px}
-  .wrap{width:100%;max-width:1040px;margin:0 auto;padding:0 16px}
+  button,input,textarea{font:inherit;color:inherit}
+  button{background:none;border:none;cursor:pointer;touch-action:manipulation}
+  a{color:inherit;text-decoration:none}
+  [hidden]{display:none!important}
+  :focus-visible{outline:3px solid var(--amber);outline-offset:2px;border-radius:6px}
+  .page{max-width:720px;margin:0 auto;background:var(--paper);min-height:100dvh;box-shadow:0 0 0 1px var(--line);padding-bottom:96px}
   .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-  .skip{position:absolute;left:16px;top:-60px;z-index:100;background:var(--ink);color:#fff;padding:10px 16px;border-radius:10px;text-decoration:none;font-weight:700}
+  .skip{position:absolute;left:12px;top:-60px;z-index:100;background:var(--navy);color:#fff;padding:10px 14px;border-radius:8px;font-weight:700}
   .skip:focus{top:12px}
 
-  /* ---------- Portada ---------- */
-  .hero{position:relative;isolation:isolate;color:#fff;overflow:hidden;background:var(--ink)}
-  .hero-bg{position:absolute;inset:0;z-index:-1}
-  .hero-bg img{width:100%;height:100%;object-fit:cover;object-position:50% 60%}
-  .hero-bg::after{content:"";position:absolute;inset:0;
-    background:linear-gradient(180deg,rgba(15,37,55,.55) 0%,rgba(15,37,55,.35) 35%,rgba(15,37,55,.92) 78%,var(--ink) 100%)}
-  @media (min-width:960px){ .hero .wrap{min-height:480px} .hero-bg img{object-position:50% 55%;filter:blur(1px)} }
-  .hero .wrap{display:flex;flex-direction:column;align-items:center;text-align:center;padding-top:clamp(28px,6vw,64px);padding-bottom:28px;min-height:min(56vh,460px);justify-content:flex-end}
-  .mark{width:clamp(84px,20vw,128px);height:auto;filter:drop-shadow(0 10px 24px rgba(0,0,0,.35))}
-  .brand{font-family:var(--display);font-weight:900;font-size:clamp(52px,14vw,96px);line-height:.88;letter-spacing:.02em;text-transform:uppercase;margin-top:14px;
-    background:var(--gold-grad);-webkit-background-clip:text;background-clip:text;color:transparent}
-  .brand-sub{display:flex;align-items:center;gap:12px;font-weight:800;font-size:13px;letter-spacing:.32em;text-transform:uppercase;margin-top:10px;color:#F7DFB3}
-  .brand-sub::before,.brand-sub::after{content:"";width:28px;height:1.5px;background:currentColor;opacity:.7}
-  .tagline{margin-top:10px;font-size:17px;color:#E6ECF1;max-width:32ch}
-  .hero-cta{margin-top:24px;display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 22px;border-radius:99px;background:var(--amber);color:var(--ink);font-weight:800;text-decoration:none;transition:transform .15s var(--ease-out),background .2s}
-  .hero-cta:hover{background:#F5B455}
-  .hero-cta:active{transform:scale(.97)}
+  /* ---- Portada ---- */
+  .cover{position:relative;height:clamp(180px,48vw,260px);background:var(--navy);overflow:hidden}
+  .cover img{width:100%;height:100%;object-fit:cover;object-position:50% 45%}
+  .cover::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(15,37,55,0) 40%,rgba(15,37,55,.55) 100%)}
+  .venue{position:relative;padding:0 16px 18px;border-bottom:8px solid var(--bg)}
+  .venue .logo{width:96px;height:96px;margin-top:-52px;border-radius:50%;border:4px solid var(--paper);background:var(--navy);position:relative;z-index:1}
+  .venue h1{font-weight:900;font-stretch:80%;font-size:32px;line-height:1.05;text-transform:uppercase;margin-top:10px}
+  .venue h1 span{display:block;font-size:15px;font-weight:700;font-stretch:100%;letter-spacing:.18em;color:var(--amber-ink);margin-top:4px}
+  .venue p{color:var(--muted);margin-top:6px}
+  .how{display:flex;gap:10px;align-items:flex-start;margin-top:14px;padding:12px 14px;border-radius:12px;background:#EAF5EE;color:#0E4B2A;font-size:15px}
+  .how svg{flex:none;margin-top:2px}
 
-  /* ---------- Navegación de categorías ---------- */
-  .cats{position:sticky;top:0;z-index:20;background:rgba(246,241,232,.9);backdrop-filter:saturate(1.4) blur(12px);-webkit-backdrop-filter:saturate(1.4) blur(12px);border-bottom:1px solid var(--sand)}
-  .cats ul{position:relative;list-style:none;display:flex;gap:8px;overflow-x:auto;padding:12px 16px;scrollbar-width:none;max-width:1040px;margin:0 auto}
-  .cats ul::-webkit-scrollbar{display:none}
-  .chip{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border-radius:99px;white-space:nowrap;text-decoration:none;font-weight:700;font-size:15px;
-    background:var(--paper);border:1px solid var(--sand);transition:background .2s,color .2s,border-color .2s}
-  .chip{position:relative;z-index:1}
-  .thumb{position:absolute;left:0;top:12px;height:44px;border-radius:99px;background:var(--ink);z-index:0;pointer-events:none;transition:transform .3s var(--ease-out),width .3s var(--ease-out)}
-  .thumb.snap{transition:none}
-  .chip .n{font-size:12px;font-weight:700;min-width:22px;height:22px;display:grid;place-items:center;border-radius:99px;background:var(--bone);color:var(--muted);font-variant-numeric:tabular-nums}
-  .chip[aria-current="true"]{background:transparent;border-color:transparent;color:#fff}
-  .chip[aria-current="true"] .n{background:var(--amber);color:var(--ink)}
+  /* ---- Categorías con foto ---- */
+  .cat-tiles{padding:18px 16px 20px;border-bottom:8px solid var(--bg)}
+  .cat-tiles h2{font-size:15px;font-weight:800;margin-bottom:12px}
+  .tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .tile{display:block;text-align:center}
+  .tile img{width:100%;height:auto;aspect-ratio:1;object-fit:cover;border-radius:14px;background:#111}
+  .tile span{display:block;margin-top:8px;font-weight:800;font-stretch:85%;text-transform:uppercase;font-size:15px}
 
-  /* ---------- Buscador ---------- */
-  .tools{padding-top:20px}
-  .search{position:relative}
-  .search label{display:block;font-size:14px;font-weight:700;margin-bottom:6px}
-  .search input{width:100%;min-height:52px;font:inherit;font-size:16px;color:var(--ink);background:var(--paper);border:1.5px solid var(--sand);border-radius:14px;padding:0 44px 0 46px;outline:none;transition:border-color .2s,box-shadow .2s;-webkit-appearance:none}
-  .search input::placeholder{color:#7C8792}
-  .search input:focus{border-color:var(--ink);box-shadow:0 0 0 4px rgba(240,166,58,.35)}
-  .search .ico{position:absolute;left:16px;bottom:16px;color:var(--muted);pointer-events:none}
-  .search .clear{position:absolute;right:4px;bottom:4px;width:44px;height:44px;border-radius:12px;display:none;place-items:center;color:var(--muted)}
-  .search.has-value .clear{display:grid}
+  /* ---- Pestañas fijas ---- */
+  .tabs{position:sticky;top:0;z-index:20;background:var(--paper);border-bottom:1px solid var(--line)}
+  .tabs-inner{display:flex;align-items:center;gap:4px;padding:0 8px}
+  .tabs ul{position:relative;flex:1;display:flex;list-style:none;overflow-x:auto;scrollbar-width:none}
+  .tabs ul::-webkit-scrollbar{display:none}
+  .tab{display:flex;align-items:center;min-height:52px;padding:0 14px;white-space:nowrap;font-weight:800;font-stretch:85%;text-transform:uppercase;font-size:15px;color:var(--muted);transition:color .2s}
+  .tab[aria-current="true"]{color:var(--text)}
+  .bar{position:absolute;left:0;bottom:0;height:3px;border-radius:3px 3px 0 0;background:var(--amber);transition:transform .3s var(--ease),width .3s var(--ease)}
+  .bar.snap{transition:none}
+  .search-btn{flex:none;width:44px;height:44px;display:grid;place-items:center;border-radius:50%}
+  .search-row{display:none;padding:10px 16px 12px;border-top:1px solid var(--line)}
+  .tabs.searching .search-row{display:block}
+  .field{width:100%;min-height:48px;font-size:16px;border:1.5px solid var(--line);border-radius:10px;padding:0 14px;background:var(--bg);outline:none;-webkit-appearance:none}
+  .field:focus{border-color:var(--navy);background:#fff}
+  textarea.field{padding:12px 14px;min-height:76px;resize:vertical}
 
-  /* ---------- Secciones ---------- */
-  section{padding-top:40px}
-  .sec-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:16px}
-  .sec-head h2{font-family:var(--display);font-weight:800;font-size:clamp(34px,8vw,44px);line-height:1;text-transform:uppercase;letter-spacing:.01em}
-  .sec-head p{color:var(--muted);font-size:15px;margin-top:6px}
-  .rune{width:36px;height:4px;border-radius:4px;background:var(--amber);margin-bottom:10px}
+  /* ---- Secciones ---- */
+  main section{padding:22px 0 6px;border-bottom:8px solid var(--bg)}
+  .sec-head{padding:0 16px 6px}
+  .sec-head h2{font-weight:900;font-stretch:78%;font-size:30px;line-height:1.05;text-transform:uppercase}
+  .sec-head p{color:var(--muted);margin-top:4px;font-size:15px}
+  .sauces{margin:12px 16px 8px;padding:14px;border-radius:12px;background:var(--bg)}
+  .sauces strong{display:block;font-size:15px}
+  .sauces small{display:block;color:var(--muted);font-size:14px;margin-top:2px}
+  .sauce-list{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .sauce{display:inline-flex;align-items:center;gap:8px;min-height:36px;padding:0 14px 0 8px;border-radius:99px;background:var(--paper);border:1px solid var(--line);font-weight:700;font-size:15px}
+  .dot{width:20px;height:20px;border-radius:50%;flex:none;box-shadow:inset 0 -3px 0 rgba(0,0,0,.18)}
+  .dot.bbq{background:var(--bbq)} .dot.mostaza{background:var(--mostaza)}
 
-  .grid{display:grid;gap:16px}
-  @media (min-width:640px){ .grid{grid-template-columns:repeat(2,minmax(0,1fr))} }
-  @media (min-width:960px){ .grid.three{grid-template-columns:repeat(3,minmax(0,1fr))} }
+  /* Productos en lista */
+  .items{list-style:none}
+  .item{position:relative;border-top:1px solid var(--line)}
+  .items li:first-child{border-top:none}
+  .row{display:grid;grid-template-columns:minmax(0,1fr) 112px;gap:14px;width:100%;padding:16px 16px 20px;text-align:left;transition:background .15s}
+  .row:active{background:var(--bg)}
+  @media (hover:hover){ .row:hover{background:#FAF8F5} }
+  .row h3{font-weight:800;font-stretch:85%;font-size:19px;line-height:1.15;text-transform:uppercase;text-wrap:balance}
+  .row .desc{color:var(--muted);font-size:15px;margin-top:4px;text-wrap:pretty}
+  .inc{font-size:14px;margin-top:6px}
+  .inc b{font-weight:700}
+  .price{font-weight:800;font-size:19px;font-variant-numeric:tabular-nums;white-space:nowrap;display:block;margin-top:10px}
+  .cur{font-size:12px;font-weight:700;color:var(--muted);margin-left:3px;letter-spacing:.04em}
+  .thumb{width:112px;height:112px;border-radius:12px;overflow:hidden;background:#111;align-self:start}
+  .thumb img{width:100%;height:100%;object-fit:cover}
+  .add{position:absolute;right:10px;top:100px;min-width:44px;height:44px;padding:0 12px;display:flex;align-items:center;justify-content:center;gap:6px;border-radius:99px;background:var(--navy);color:#fff;font-weight:800;font-size:15px;box-shadow:0 4px 12px rgba(15,37,55,.3);transition:transform .15s var(--ease)}
+  .add:active{transform:scale(.94)}
+  .add .q{min-width:20px;height:20px;border-radius:99px;background:var(--amber);color:var(--navy);font-size:13px;display:grid;place-items:center;padding:0 5px}
+  @media (min-width:560px){ .row{grid-template-columns:minmax(0,1fr) 140px} .thumb{width:140px;height:140px} .add{top:128px} }
 
-  .card{position:relative;display:flex;flex-direction:column;background:var(--paper);border-radius:var(--radius);box-shadow:var(--shadow);overflow:hidden;text-align:left;width:100%;
-    transition:transform .25s var(--ease-out),box-shadow .25s;opacity:0;transform:translateY(12px);animation:rise .5s var(--ease-out) forwards;animation-delay:calc(var(--i,0) * 40ms)}
-  .card:hover{transform:translateY(-2px);box-shadow:0 1px 2px rgba(15,37,55,.06),0 16px 32px -14px rgba(15,37,55,.28)}
-  .card:active{transform:scale(.97);transition-duration:80ms}
-  @keyframes rise{to{opacity:1;transform:none}}
-  .media{position:relative;aspect-ratio:16/10;background:#0E0E0E;overflow:hidden}
-  .media img{width:100%;height:100%;object-fit:cover;transition:transform .5s var(--ease-out)}
-  .card:hover .media img{transform:scale(1.03)}
-  .media.contain img{object-fit:contain;padding:10px}
-  .badge{position:absolute;left:12px;top:12px;display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:6px 10px;border-radius:99px;background:var(--amber);color:var(--ink)}
-  .badge.alt{background:var(--paper);color:var(--ink)}
-  .body{display:flex;flex-direction:column;gap:6px;padding:16px 18px 18px;flex:1}
-  .meta{display:flex;flex-wrap:wrap;gap:4px 10px;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:#94560A}
-  .meta span+span::before{content:"·";margin-right:10px;color:var(--muted)}
-  .meta:empty{display:none}
-  .card h3{text-wrap:balance;font-family:var(--display);font-weight:800;font-size:26px;line-height:1.05;text-transform:uppercase;letter-spacing:.01em}
-  .card .desc{color:var(--muted);font-size:15px;line-height:1.6;text-wrap:pretty}
-  .includes{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px;list-style:none}
-  .includes li{font-size:13px;font-weight:700;padding:4px 10px;border-radius:99px;background:var(--bone);color:var(--ink-2)}
-  .foot{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-top:auto;padding-top:12px}
-  .price{font-family:var(--display);font-weight:800;font-size:32px;line-height:1;font-variant-numeric:tabular-nums;white-space:nowrap}
-  .price small{font-family:var(--sans);font-size:15px;font-weight:700;margin-right:2px;vertical-align:.55em}
-  .price .cur{font-family:var(--sans);font-size:12px;font-weight:800;letter-spacing:.08em;color:var(--muted);margin-left:6px;vertical-align:.35em}
-  .unit{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums;white-space:nowrap;margin-top:4px}
-  .more{width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:99px;background:var(--ink);color:#fff}
+  .empty{display:none;padding:40px 16px;text-align:center;color:var(--muted)}
+  footer{padding:28px 16px 32px;text-align:center;color:var(--muted);font-size:14px}
+  footer img{width:48px;height:48px;margin:0 auto 10px}
+  footer b{display:block;color:var(--text);font-weight:900;font-stretch:80%;text-transform:uppercase;font-size:18px}
 
-  .empty{display:none;text-align:center;padding:48px 16px;color:var(--muted)}
-  .empty strong{display:block;color:var(--ink);font-size:18px;margin-bottom:4px}
+  /* ---- Barra del pedido ---- */
+  .cartbar{position:fixed;left:0;right:0;bottom:0;z-index:30;padding:10px 12px calc(10px + env(safe-area-inset-bottom));pointer-events:none}
+  .cartbar button{pointer-events:auto;display:flex;align-items:center;gap:12px;width:100%;max-width:696px;margin:0 auto;min-height:58px;padding:0 18px;border-radius:16px;background:var(--navy);color:#fff;box-shadow:0 10px 30px -8px rgba(15,37,55,.55);transform:translateY(130%);transition:transform .35s var(--ease)}
+  .cartbar.show button{transform:none}
+  .cartbar .n{min-width:28px;height:28px;border-radius:99px;background:var(--amber);color:var(--navy);display:grid;place-items:center;font-weight:900;font-size:15px;padding:0 8px}
+  .cartbar .lbl{flex:1;text-align:left;font-weight:800}
+  .cartbar .tot{font-weight:800;font-variant-numeric:tabular-nums}
+  .cartbar.bump .n{animation:bump .35s var(--ease)}
+  @keyframes bump{40%{transform:scale(1.25)}}
 
-  /* ---------- Footer ---------- */
-  footer{margin-top:64px;background:var(--ink);color:#C9D4DD;padding:40px 0 calc(40px + env(safe-area-inset-bottom))}
-  footer .wrap{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px}
-  footer img{width:64px;height:64px}
-  footer .name{font-family:var(--display);font-weight:800;font-size:28px;letter-spacing:.02em;text-transform:uppercase;color:#fff}
-  footer p{font-size:14px}
-
-  /* ---------- Detalle (bottom sheet) ---------- */
+  /* ---- Hojas (detalle y pedido) ---- */
+  dialog{position:fixed;inset:auto 0 0 0;margin:0 auto;width:100%;max-width:560px;max-height:92dvh;border:none;padding:0;background:var(--paper);color:var(--text);border-radius:18px 18px 0 0;overflow:auto;overscroll-behavior:contain}
+  dialog[open]{animation:up .28s var(--ease)}
+  dialog::backdrop{background:rgba(15,37,55,.6)}
+  @keyframes up{from{transform:translateY(32px);opacity:0}to{transform:none;opacity:1}}
+  @media (min-width:640px){ dialog{inset:0;margin:auto;border-radius:18px} }
   html:has(dialog[open]){overflow:hidden}
   body.locked{overflow:hidden}
-  dialog{overscroll-behavior:contain;-webkit-overflow-scrolling:touch;position:fixed;inset:auto 0 0 0;margin:0 auto;width:100%;max-width:560px;max-height:92dvh;border:none;padding:0;background:var(--paper);color:var(--ink);border-radius:24px 24px 0 0;overflow:auto;box-shadow:0 -12px 40px rgba(0,0,0,.25)}
-  dialog[open]{animation:sheet-in .32s var(--ease-out)}
-  dialog::backdrop{background:rgba(15,37,55,.55);backdrop-filter:blur(2px)}
-  @keyframes sheet-in{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
-  @media (min-width:640px){ dialog{inset:0;margin:auto;border-radius:24px;max-height:88dvh} }
-  .sheet-media{aspect-ratio:4/3;background:#0E0E0E}
-  .sheet-media img{width:100%;height:100%;object-fit:cover}
-  .sheet-media.contain img{object-fit:contain;padding:16px}
-  .sheet-body{padding:20px 22px calc(24px + env(safe-area-inset-bottom))}
-  .sheet-body h3{font-family:var(--display);font-weight:800;font-size:34px;line-height:1;text-transform:uppercase}
-  .sheet-body .desc{color:var(--muted);margin-top:8px}
-  .sheet-body .includes{margin-top:14px}
-  .sheet-body .foot{padding-top:20px;border-top:1px solid var(--sand);margin-top:20px}
-  .close{position:absolute;top:12px;right:12px;width:44px;height:44px;border-radius:99px;display:grid;place-items:center;background:rgba(255,253,249,.92);color:var(--ink);box-shadow:var(--shadow)}
+  .close{position:absolute;top:10px;right:10px;z-index:2;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(255,255,255,.95);box-shadow:0 2px 8px rgba(0,0,0,.2)}
+  .d-img{aspect-ratio:16/10;background:#111}
+  .d-img img{width:100%;height:100%;object-fit:cover}
+  .d-img.contain img{object-fit:contain;padding:12px}
+  .sheet-body{padding:18px 18px 0}
+  .sheet-body h3{font-weight:900;font-stretch:80%;font-size:28px;line-height:1.05;text-transform:uppercase;padding-right:40px}
+  .sheet-body .desc{color:var(--muted);margin-top:6px}
+  .group{margin-top:18px}
+  .group-title{font-weight:800;font-size:15px}
+  .group-title small{display:block;font-weight:400;color:var(--muted);font-size:14px}
+  .pick{display:flex;flex-direction:column;gap:8px;margin-top:10px}
+  .pick-row{display:grid;grid-template-columns:72px 1fr 1fr;gap:8px;align-items:center}
+  .pick-row > span{font-size:14px;font-weight:700;color:var(--muted)}
+  .opt{position:relative}
+  .opt input{position:absolute;opacity:0;inset:0;margin:0}
+  .opt label{display:flex;align-items:center;gap:8px;min-height:44px;padding:0 12px;border-radius:12px;border:1.5px solid var(--line);font-weight:700;font-size:15px;cursor:pointer;transition:border-color .15s,background .15s}
+  .opt input:checked + label{border-color:var(--navy);background:#EEF2F6}
+  .opt input:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px}
+  .stepper{display:inline-flex;align-items:center;border:1.5px solid var(--line);border-radius:99px}
+  .stepper button{width:44px;height:44px;display:grid;place-items:center;border-radius:99px;font-size:22px;font-weight:700}
+  .stepper button:disabled{opacity:.35;cursor:default}
+  .stepper output{min-width:28px;text-align:center;font-weight:800;font-variant-numeric:tabular-nums}
+  .sheet-foot{position:sticky;bottom:0;display:flex;gap:12px;align-items:center;padding:14px 18px calc(14px + env(safe-area-inset-bottom));margin-top:20px;background:var(--paper);border-top:1px solid var(--line)}
+  .primary{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:0 18px;border-radius:14px;background:var(--navy);color:#fff;font-weight:800;font-size:16px;transition:transform .15s var(--ease)}
+  .primary:active{transform:scale(.97)}
+  .primary.wa{background:var(--wa)}
+  .primary .p{font-variant-numeric:tabular-nums}
 
-  @media (prefers-reduced-motion:reduce){
-    *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}
-    .card{opacity:1;transform:none}
-  }
+  /* Pedido */
+  .cart-list{list-style:none;margin-top:8px}
+  .cart-list li{display:grid;grid-template-columns:56px 1fr;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+  .cart-list img{width:56px;height:56px;border-radius:10px;object-fit:cover;background:#111}
+  .cart-list .nm{font-weight:800;font-stretch:88%;text-transform:uppercase;line-height:1.2}
+  .cart-list .sx{font-size:14px;color:var(--muted)}
+  .cart-list .ln{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:8px}
+  .cart-list .lp{font-weight:800;font-variant-numeric:tabular-nums}
+  .totals{margin-top:14px;padding:14px;border-radius:12px;background:var(--bg)}
+  .totals .t{display:flex;justify-content:space-between;font-weight:900;font-size:20px;font-variant-numeric:tabular-nums}
+  .totals p{font-size:14px;color:var(--muted);margin-top:4px}
+  .form{display:grid;gap:14px;margin-top:20px}
+  .form label.l{display:block;font-weight:700;font-size:15px;margin-bottom:6px}
+  .form .err{color:#B42318;font-size:14px;margin-top:4px}
+  .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .cart-empty{padding:24px 0;color:var(--muted)}
+
+  .toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));z-index:40;transform:translate(-50%,20px);opacity:0;background:var(--text);color:#fff;padding:10px 16px;border-radius:12px;font-size:15px;font-weight:600;pointer-events:none;transition:opacity .2s,transform .25s var(--ease);max-width:calc(100% - 32px)}
+  .toast.on{opacity:1;transform:translate(-50%,0)}
+
+  @media (prefers-reduced-motion:reduce){ *{animation:none!important;transition:none!important} }
 </style>
 </head>
 <body>
 <a class="skip" href="#menu">Saltar al menú</a>
+<div class="page">
+  <header>
+    <div class="cover"><img src="img/cover.webp" alt="Bandeja de alitas en BBQ y miel mostaza con papas" width="894" height="780" fetchpriority="high"></div>
+    <div class="venue">
+      <img class="logo" src="img/mark.svg" alt="" width="96" height="96">
+      <h1>Vikingos <span>Bar &amp; Food</span></h1>
+      <p>Porque comer te hace fuerte.</p>
+      <div class="how">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Zm4.5-6.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.2-.2-.5-.3Z"/></svg>
+        <span>Arma tu pedido aquí y envíalo por WhatsApp. El valor del domicilio te lo confirmamos por el chat.</span>
+      </div>
+    </div>
+  </header>
 
-<header class="hero">
-  <div class="hero-bg" aria-hidden="true"><img src="img/hero.webp" alt="" width="894" height="960" fetchpriority="high"></div>
-  <div class="wrap">
-    <img class="mark" src="img/mark.svg" alt="" width="148" height="148">
-    <h1 class="brand"><span class="sr-only">Vikingos Bar and Food</span><span aria-hidden="true">Vikingos</span></h1>
-    <p class="brand-sub" aria-hidden="true">Bar &amp; Food</p>
-    <p class="tagline">Porque comer te hace fuerte.</p>
-  </div>
-</header>
+  <nav class="cat-tiles" aria-labelledby="h-cats">
+    <h2 id="h-cats">Categorías</h2>
+    <div class="tiles" id="tiles"></div>
+  </nav>
 
-<nav class="cats" aria-label="Categorías del menú">
-  <ul id="chips"></ul>
-</nav>
-
-<main id="menu" class="wrap" tabindex="-1">
-  <div class="tools">
-    <div class="search" id="searchBox">
-      <label for="q">Buscar en el menú</label>
-      <svg class="ico" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
-      <input id="q" type="search" placeholder="Alitas, salchipapa, cerveza…" autocomplete="off" enterkeyhint="search">
-      <button class="clear" type="button" aria-label="Borrar búsqueda">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  <div class="tabs" id="tabs">
+    <div class="tabs-inner">
+      <ul id="tablist" aria-label="Categorías del menú"></ul>
+      <button class="search-btn" id="searchToggle" type="button" aria-label="Buscar en el menú" aria-expanded="false" aria-controls="searchRow">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
       </button>
     </div>
+    <div class="search-row" id="searchRow">
+      <label class="sr-only" for="q">Buscar en el menú</label>
+      <input class="field" id="q" type="search" placeholder="Busca alitas, salchipapa, cerveza…" autocomplete="off" enterkeyhint="search">
+    </div>
   </div>
-  <div id="sections"></div>
-  <div class="empty" id="empty" role="status" aria-live="polite"><strong>Sin resultados</strong>Prueba con otra palabra, por ejemplo “alitas”.</div>
-</main>
 
-<footer>
-  <div class="wrap">
-    <img src="img/mark.svg" alt="" width="64" height="64">
-    <div class="name">Vikingos Bar &amp; Food</div>
-    <p>Porque comer te hace fuerte.</p>
-    <p>Precios en pesos colombianos (COP).</p>
-  </div>
-</footer>
+  <main id="menu" tabindex="-1"></main>
+  <p class="empty" id="empty" role="status" aria-live="polite">No hay productos con ese nombre.</p>
 
-<dialog id="sheet" aria-labelledby="s-name">
-  <button class="close" type="button" aria-label="Cerrar detalle">
+  <footer>
+    <img src="img/mark.svg" alt="" width="48" height="48">
+    <b>Vikingos Bar &amp; Food</b>
+    Precios en pesos colombianos (COP). Domicilio no incluido.
+  </footer>
+</div>
+
+<div class="cartbar" id="cartbar">
+  <button type="button" id="openCart" tabindex="-1">
+    <span class="n" id="cbN">0</span>
+    <span class="lbl">Ver pedido</span>
+    <span class="tot" id="cbT">$0</span>
+  </button>
+</div>
+
+<!-- Detalle de producto -->
+<dialog id="sheet" aria-labelledby="d-name">
+  <button class="close" type="button" data-close aria-label="Cerrar">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
   </button>
-  <div class="sheet-media" id="s-media"><img id="s-img" alt=""></div>
+  <div class="d-img" id="d-img"><img alt=""></div>
   <div class="sheet-body">
-    <div class="meta" id="s-meta"></div>
-    <h3 id="s-name"></h3>
-    <p class="desc" id="s-desc"></p>
-    <ul class="includes" id="s-inc"></ul>
-    <div class="foot">
-      <div><div class="price" id="s-price"></div><div class="unit" id="s-unit"></div></div>
+    <h3 id="d-name"></h3>
+    <p class="desc" id="d-desc"></p>
+    <p class="inc" id="d-inc"></p>
+    <div class="group" id="d-sauces"></div>
+  </div>
+  <div class="sheet-foot">
+    <div class="stepper" role="group" aria-label="Cantidad">
+      <button type="button" id="d-minus" aria-label="Quitar uno">−</button>
+      <output id="d-qty" aria-live="polite">1</output>
+      <button type="button" id="d-plus" aria-label="Agregar uno">+</button>
     </div>
+    <button class="primary" type="button" id="d-add">Agregar <span class="p" id="d-total"></span></button>
   </div>
 </dialog>
 
+<!-- Pedido -->
+<dialog id="cart" aria-labelledby="c-title">
+  <button class="close" type="button" data-close aria-label="Cerrar">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+  </button>
+  <div class="sheet-body">
+    <h3 id="c-title">Tu pedido</h3>
+    <ul class="cart-list" id="c-list"></ul>
+    <p class="cart-empty" id="c-empty" hidden>Todavía no has agregado productos.</p>
+    <div class="totals" id="c-totals">
+      <div class="t"><span>Subtotal</span><span id="c-sub"></span></div>
+      <p>No incluye domicilio. Te confirmamos el valor por WhatsApp.</p>
+    </div>
+    <form class="form" id="c-form" novalidate>
+      <div>
+        <label class="l" for="f-name">Tu nombre</label>
+        <input class="field" id="f-name" autocomplete="name" required>
+        <p class="err" id="e-name" hidden>Escribe tu nombre.</p>
+      </div>
+      <div>
+        <span class="l" id="l-mode" style="display:block;font-weight:700;font-size:15px;margin-bottom:6px">¿Cómo lo recibes?</span>
+        <div class="seg" role="radiogroup" aria-labelledby="l-mode">
+          <div class="opt"><input type="radio" name="mode" id="m-dom" value="Domicilio" checked><label for="m-dom">Domicilio</label></div>
+          <div class="opt"><input type="radio" name="mode" id="m-rec" value="Recoger en el local"><label for="m-rec">Recoger</label></div>
+        </div>
+      </div>
+      <div id="addrWrap" class="form" style="margin-top:0">
+        <div>
+          <label class="l" for="f-barrio">Barrio</label>
+          <input class="field" id="f-barrio" autocomplete="address-level3" placeholder="Ej.: San Fernando">
+          <p class="err" id="e-barrio" hidden>Escribe el barrio.</p>
+        </div>
+        <div>
+          <label class="l" for="f-addr">Dirección</label>
+          <input class="field" id="f-addr" autocomplete="address-line1" placeholder="Ej.: Calle 5 # 38-20">
+          <p class="err" id="e-addr" hidden>Escribe la dirección.</p>
+        </div>
+        <div>
+          <label class="l" for="f-addr2">Dirección adicional (opcional)</label>
+          <input class="field" id="f-addr2" autocomplete="address-line2" placeholder="Apto, torre, casa o punto de referencia">
+        </div>
+      </div>
+      <div>
+        <label class="l" for="f-notes">Observaciones (opcional)</label>
+        <textarea class="field" id="f-notes" placeholder="Ej.: papas sin salsa, pago en efectivo con billete de $50.000…"></textarea>
+      </div>
+    </form>
+  </div>
+  <div class="sheet-foot">
+    <button class="primary wa" type="button" id="sendWa">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm4.5 12.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.2-.2-.5-.3Z"/></svg>
+      Enviar pedido por WhatsApp
+    </button>
+  </div>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
 <script>
-/* ===== Datos del menú: edita aquí nombres, precios y fotos ===== */
+/* ===== Configuración ===== */
+const WHATSAPP = "573122365137";   // número con indicativo de Colombia (57)
+const SAUCES = [ {id:"bbq", name:"BBQ"}, {id:"mostaza", name:"Miel mostaza"} ];
+
+/* ===== Menú: edita aquí nombres, precios y fotos ===== */
 const MENU = [
-  { id:"alitas", name:"Alitas", note:"Combos con papa y bebida incluidas.", cols:3, items:[
-    { name:"Alitas x6", qty:"6 unidades", serves:"Para 1 persona", desc:"Seis alitas bañadas en salsa, con papa y bebida.", includes:["6 alitas","Papa","1 bebida"], price:24000, units:6, img:"img/alitas6.webp",  w:800, h:599 },
-    { name:"Alitas x12", qty:"12 unidades", serves:"Para 2 personas", desc:"Doce alitas para compartir, con papa y dos bebidas.", includes:["12 alitas","Papa","2 bebidas"], price:44000, units:12, img:"img/alitas12.webp", w:800, h:599 },
-    { name:"Alitas x18", qty:"18 unidades", serves:"Para 3 personas", desc:"Dieciocho alitas para el grupo, con papa y tres bebidas.", includes:["18 alitas","Papa","3 bebidas"], price:64000, units:18, img:"img/alitas18.webp", w:800, h:697, badge:"Mejor precio por alita" },
+  { id:"alitas", name:"Alitas", note:"Combos con papa y bebida.", tile:"img/cat-alitas.webp", items:[
+    { id:"a6",  name:"Combo 6 alitas",  desc:"6 alitas bañadas en la salsa que elijas.", inc:"Papa + 1 bebida", price:24000, img:"img/alitas6",  groups:1 },
+    { id:"a12", name:"Combo 12 alitas", desc:"12 alitas en 2 grupos de 6: una salsa por grupo.", inc:"Papa + 2 bebidas", price:44000, img:"img/alitas12", groups:2 },
+    { id:"a18", name:"Combo 18 alitas", desc:"18 alitas en 3 grupos de 6: una salsa por grupo.", inc:"Papa + 3 bebidas", price:64000, img:"img/alitas18", groups:3 },
   ]},
-  { id:"salchipapas", name:"Salchipapas", note:"Gratinadas con queso fundido.", cols:3, items:[
-    { name:"Salchipapa sencilla", qty:"1 porción", serves:"Para 1 persona", desc:"Papa a la francesa con salchicha, gratinada con queso y salsas.", includes:["Salchicha","Queso gratinado"], price:12000, img:"img/salchi_sencilla.webp", w:615, h:255 },
-    { name:"Salchipapa con pollo", qty:"1 porción", serves:"Para 1 persona", desc:"Papa a la francesa con salchicha y pollo, gratinada con queso y salsas.", includes:["Salchicha","Pollo","Queso gratinado"], price:16000, img:"img/salchi_pollo.webp", w:640, h:265 },
-    { name:"Costipapa + bebida", qty:"1 porción + bebida", serves:"Para 1 persona", desc:"Papa a la francesa con costilla, gratinada con queso. Incluye bebida.", includes:["Costilla","Queso gratinado","1 bebida"], price:20000, img:"img/costipapa.webp", w:630, h:250, badge:"Incluye bebida", alt:true },
+  { id:"salchipapas", name:"Salchipapas", note:"Gratinadas con queso fundido.", tile:"img/cat-salchipapas.webp", items:[
+    { id:"s1", name:"Salchipapa gratinada sencilla", desc:"Papa a la francesa con salchicha, gratinada con queso y salsas.", price:12000, img:"img/salchi_sencilla" },
+    { id:"s2", name:"Salchipapa gratinada con pollo", desc:"Papa a la francesa con salchicha y pollo, gratinada con queso y salsas.", price:16000, img:"img/salchi_pollo" },
+    { id:"s3", name:"Costipapa gratinada + bebida", desc:"Papa a la francesa con costilla, gratinada con queso y salsas.", inc:"1 bebida", price:20000, img:"img/costipapa" },
   ]},
-  { id:"bebidas", name:"Bebidas", note:"Bien frías.", cols:2, items:[
-    { name:"Coronita", qty:"Botella 210 ml", desc:"Cerveza Corona Extra en su versión Coronita (botella pequeña).", price:5000, img:"img/corona.webp", w:230, h:372, contain:true },
-    { name:"Coca-Cola", qty:"Lata", desc:"Coca-Cola original en lata, bien fría.", price:4000, img:"img/cocacola.webp", w:240, h:242, contain:true },
+  { id:"bebidas", name:"Bebidas", note:"Bien frías.", tile:"img/cat-bebidas.webp", items:[
+    { id:"b1", name:"Coronita", desc:"Cerveza Corona Extra, botella de 210 ml.", price:5000, img:"img/corona", contain:true },
+    { id:"b2", name:"Coca-Cola en lata", desc:"Coca-Cola original en lata.", price:4000, img:"img/cocacola", contain:true },
   ]},
 ];
 
 const $ = s => document.querySelector(s);
-const fmt = n => new Intl.NumberFormat("es-CO",{maximumFractionDigits:0}).format(n);
-const priceHTML = n => `<small>$</small>${fmt(n)}<span class="cur">COP</span>`;
+const fmt = n => "$" + new Intl.NumberFormat("es-CO",{maximumFractionDigits:0}).format(n);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g,"").toLowerCase();
-const arrow = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
-const unitText = it => it.units ? `≈ $${fmt(Math.round(it.price/it.units))} COP por alita` : "";
+const reduce = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+const ITEMS = {}; MENU.forEach(c => c.items.forEach(it => ITEMS[it.id] = it));
+const sauceName = id => SAUCES.find(s => s.id === id).name;
+const plus = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>';
 
-$("#chips").innerHTML = MENU.map(c =>
-  `<li><a class="chip" href="#${c.id}" data-id="${c.id}">${esc(c.name)}<span class="n" aria-label="${c.items.length} productos">${c.items.length}</span></a></li>`).join("");
+/* ===== Render ===== */
+$("#tiles").innerHTML = MENU.map(c => `<a class="tile" href="#${c.id}" data-id="${c.id}"><img src="${c.tile}" alt="" width="320" height="320" loading="lazy"><span>${esc(c.name)}</span></a>`).join("");
+$("#tablist").innerHTML = `<li class="bar snap" aria-hidden="true"></li>` + MENU.map(c => `<li><a class="tab" href="#${c.id}" data-id="${c.id}">${esc(c.name)}</a></li>`).join("");
 
-let k = 0;
-$("#sections").innerHTML = MENU.map(c => `
+$("#menu").innerHTML = MENU.map(c => `
   <section id="${c.id}" aria-labelledby="h-${c.id}">
-    <div class="sec-head"><div><div class="rune" aria-hidden="true"></div><h2 id="h-${c.id}">${esc(c.name)}</h2><p>${esc(c.note)}</p></div></div>
-    <div class="grid${c.cols===3?" three":""}">
-      ${c.items.map((it,i) => `
-        <button type="button" class="card" style="--i:${k++}" data-c="${c.id}" data-i="${i}" data-q="${esc(norm(c.name+" "+it.name+" "+it.desc+" "+(it.includes||[]).join(" ")))}" aria-label="${esc(it.name)}, ${fmt(it.price)} pesos. Ver detalle">
-          <div class="media${it.contain?" contain":""}">
-            <img src="${it.img}" alt="" width="${it.w}" height="${it.h}" loading="lazy" decoding="async">
-            ${it.badge ? `<span class="badge${it.alt?" alt":""}">${esc(it.badge)}</span>` : ""}
-          </div>
-          <div class="body">
-            <div class="meta">${it.qty?`<span>${esc(it.qty)}</span>`:""}${it.serves?`<span>${esc(it.serves)}</span>`:""}</div>
+    <div class="sec-head"><h2 id="h-${c.id}">${esc(c.name)}</h2><p>${esc(c.note)}</p></div>
+    ${c.id === "alitas" ? `
+    <div class="sauces">
+      <strong>Salsas: BBQ o miel mostaza</strong>
+      <small>Las alitas van en grupos de 6 y cada grupo lleva una salsa. Las eliges al agregar.</small>
+      <div class="sauce-list">${SAUCES.map(s => `<span class="sauce"><i class="dot ${s.id}" aria-hidden="true"></i>${s.name}</span>`).join("")}</div>
+    </div>` : ""}
+    <ul class="items">
+      ${c.items.map(it => `
+      <li class="item" data-q="${esc(norm(c.name+" "+it.name+" "+it.desc+" "+(it.inc||"")+(it.groups?" bbq miel mostaza salsa":"")))}">
+        <button class="row" type="button" data-open="${it.id}" aria-label="${esc(it.name)}, ${fmt(it.price)} pesos. Ver detalle">
+          <div>
             <h3>${esc(it.name)}</h3>
             <p class="desc">${esc(it.desc)}</p>
-            ${it.includes ? `<ul class="includes">${it.includes.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>` : ""}
-            <div class="foot">
-              <div><div class="price">${priceHTML(it.price)}</div>${it.units?`<div class="unit">${unitText(it)}</div>`:""}</div>
-              <span class="more" aria-hidden="true">${arrow}</span>
-            </div>
+            ${it.inc ? `<p class="inc"><b>Incluye:</b> ${esc(it.inc)}</p>` : ""}
+            <span class="price">${fmt(it.price)}<span class="cur">COP</span></span>
           </div>
-        </button>`).join("")}
-    </div>
+          <div class="thumb"><img src="${it.img}-sq.webp" alt="" width="360" height="360" loading="lazy" decoding="async"></div>
+        </button>
+        <button class="add" type="button" data-add="${it.id}" aria-label="Agregar ${esc(it.name)}">${plus}</button>
+      </li>`).join("")}
+    </ul>
   </section>`).join("");
 
-/* Detalle */
-const sheet = $("#sheet");
-let lastTrigger = null;
-function openItem(btn){
-  const it = MENU.find(c => c.id === btn.dataset.c).items[+btn.dataset.i];
-  lastTrigger = btn;
-  $("#s-img").src = it.img;
-  $("#s-media").classList.toggle("contain", !!it.contain);
-  $("#s-meta").innerHTML = [it.qty,it.serves].filter(Boolean).map(x=>`<span>${esc(x)}</span>`).join("");
-  $("#s-name").textContent = it.name;
-  $("#s-desc").textContent = it.desc;
-  $("#s-inc").innerHTML = (it.includes||[]).map(x=>`<li>${esc(x)}</li>`).join("");
-  $("#s-price").innerHTML = priceHTML(it.price);
-  $("#s-unit").textContent = unitText(it);
-  sheet.showModal();
-}
-document.querySelectorAll(".card").forEach(b => b.addEventListener("click", () => openItem(b)));
-sheet.querySelector(".close").addEventListener("click", () => sheet.close());
-sheet.addEventListener("click", e => { if (e.target === sheet) sheet.close(); });
-sheet.addEventListener("close", () => lastTrigger && lastTrigger.focus({preventScroll:true}));
+/* ===== Carrito (se guarda en este navegador) ===== */
+let cart = [];
+try { cart = JSON.parse(localStorage.getItem("vikingos-cart") || "[]").filter(l => ITEMS[l.id]); } catch(e) { cart = []; }
+const save = () => { try { localStorage.setItem("vikingos-cart", JSON.stringify(cart)); } catch(e) {} };
+const lineKey = (id, sauces) => id + "|" + (sauces || []).join(",");
+const lineTotal = l => ITEMS[l.id].price * l.qty;
+const subtotal = () => cart.reduce((s,l) => s + lineTotal(l), 0);
+const count = () => cart.reduce((s,l) => s + l.qty, 0);
+const sauceText = s => {
+  if (!s || !s.length) return "";
+  const c = {}; s.forEach(x => c[x] = (c[x]||0) + 1);
+  return Object.entries(c).map(([k,n]) => (s.length > 1 ? `${n * 6} en ` : "") + sauceName(k)).join(" + ");
+};
 
-/* Bloqueo de scroll del fondo mientras hay un diálogo abierto */
-document.querySelectorAll("dialog").forEach(d => {
-  new MutationObserver(() => document.body.classList.toggle("locked", !!document.querySelector("dialog[open]"))).observe(d, {attributes:true, attributeFilter:["open"]});
+function addLine(id, qty, sauces){
+  const key = lineKey(id, sauces), ex = cart.find(l => lineKey(l.id, l.sauces) === key);
+  if (ex) ex.qty += qty; else cart.push({ id, qty, sauces: sauces || [] });
+  save(); refresh(true);
+  toast(`Agregado: ${qty} × ${ITEMS[id].name}${sauces && sauces.length ? " (" + sauceText(sauces) + ")" : ""}`);
+}
+
+function refresh(bump){
+  const n = count(), bar = $("#cartbar");
+  $("#cbN").textContent = n; $("#cbT").textContent = fmt(subtotal());
+  bar.classList.toggle("show", n > 0);
+  $("#openCart").tabIndex = n > 0 ? 0 : -1;
+  if (bump) { bar.classList.remove("bump"); void bar.offsetWidth; bar.classList.add("bump"); }
+  document.querySelectorAll("[data-add]").forEach(b => {
+    const q = cart.filter(l => l.id === b.dataset.add).reduce((s,l) => s + l.qty, 0);
+    b.innerHTML = q ? `<span class="q">${q}</span>${plus}` : plus;
+  });
+  if ($("#cart").open) renderCart();
+}
+
+let tt; function toast(msg){ const t = $("#toast"); t.textContent = msg; t.classList.add("on"); clearTimeout(tt); tt = setTimeout(() => t.classList.remove("on"), 2600); }
+
+/* ===== Detalle de producto ===== */
+const sheet = $("#sheet"); let cur = null, qty = 1, lastFocus = null;
+function openItem(id){
+  cur = ITEMS[id]; qty = 1; lastFocus = document.activeElement;
+  const box = $("#d-img"); box.classList.toggle("contain", !!cur.contain); box.querySelector("img").src = cur.img + ".webp";
+  $("#d-name").textContent = cur.name;
+  $("#d-desc").textContent = cur.desc;
+  $("#d-inc").innerHTML = cur.inc ? `<b>Incluye:</b> ${esc(cur.inc)}` : ""; $("#d-inc").hidden = !cur.inc;
+  const g = $("#d-sauces");
+  if (cur.groups) {
+    g.hidden = false;
+    g.innerHTML = `<div class="group-title">Elige la salsa<small>${cur.groups > 1 ? `Una salsa por cada grupo de 6 alitas.` : `Para tus 6 alitas.`}</small></div>
+      <div class="pick">${Array.from({length:cur.groups}, (_,i) => `
+        <div class="pick-row" role="radiogroup" aria-label="Grupo ${i+1}">
+          <span>${cur.groups > 1 ? `Grupo ${i+1}` : "6 alitas"}</span>
+          ${SAUCES.map((s,j) => `<div class="opt"><input type="radio" name="g${i}" id="g${i}-${s.id}" value="${s.id}" ${j === (i % 2) ? "checked" : ""}><label for="g${i}-${s.id}"><i class="dot ${s.id}" aria-hidden="true"></i>${s.name}</label></div>`).join("")}
+        </div>`).join("")}</div>`;
+  } else { g.hidden = true; g.innerHTML = ""; }
+  updateQty(); sheet.showModal();
+}
+function updateQty(){ $("#d-qty").textContent = qty; $("#d-minus").disabled = qty <= 1; $("#d-total").textContent = fmt(cur.price * qty); }
+$("#d-minus").addEventListener("click", () => { if (qty > 1) { qty--; updateQty(); } });
+$("#d-plus").addEventListener("click", () => { if (qty < 20) { qty++; updateQty(); } });
+$("#d-add").addEventListener("click", () => {
+  const sauces = cur.groups ? Array.from({length:cur.groups}, (_,i) => sheet.querySelector(`input[name="g${i}"]:checked`).value) : [];
+  addLine(cur.id, qty, sauces); sheet.close();
+});
+document.querySelectorAll("[data-open]").forEach(b => b.addEventListener("click", () => openItem(b.dataset.open)));
+document.querySelectorAll("[data-add]").forEach(b => b.addEventListener("click", () => {
+  const it = ITEMS[b.dataset.add];
+  if (it.groups) openItem(it.id); else addLine(it.id, 1, []);
+}));
+
+/* ===== Pedido ===== */
+const cartDlg = $("#cart");
+function renderCart(){
+  const empty = !cart.length;
+  $("#c-empty").hidden = !empty; $("#c-totals").hidden = empty; $("#c-form").hidden = empty; $("#sendWa").disabled = empty;
+  $("#c-list").innerHTML = cart.map((l,i) => { const it = ITEMS[l.id]; return `
+    <li>
+      <img src="${it.img}-sq.webp" alt="">
+      <div>
+        <div class="nm">${esc(it.name)}</div>
+        ${l.sauces.length ? `<div class="sx">Salsa: ${esc(sauceText(l.sauces))}</div>` : ""}
+        <div class="ln">
+          <div class="stepper" role="group" aria-label="Cantidad de ${esc(it.name)}">
+            <button type="button" data-dec="${i}" aria-label="${l.qty === 1 ? "Eliminar" : "Quitar uno"}">${l.qty === 1 ? '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M4 7h16M10 11v6M14 11v6M6 7l1 13h10l1-13M9 7V4h6v3"/></svg>' : "−"}</button>
+            <output>${l.qty}</output>
+            <button type="button" data-inc="${i}" aria-label="Agregar uno">+</button>
+          </div>
+          <span class="lp">${fmt(lineTotal(l))}</span>
+        </div>
+      </div>
+    </li>`; }).join("");
+  $("#c-sub").textContent = fmt(subtotal()) + " COP";
+}
+$("#c-list").addEventListener("click", e => {
+  const d = e.target.closest("[data-dec]"), p = e.target.closest("[data-inc]");
+  if (d) { const l = cart[+d.dataset.dec]; l.qty--; if (!l.qty) cart.splice(+d.dataset.dec, 1); }
+  else if (p) { cart[+p.dataset.inc].qty++; }
+  else return;
+  save(); refresh();
+  if (!cart.length) toast("Pedido vacío");
+});
+$("#openCart").addEventListener("click", () => { renderCart(); try { const s = JSON.parse(localStorage.getItem("vikingos-cliente")||"{}"); if (s.name && !$("#f-name").value) $("#f-name").value = s.name; ["barrio","addr","addr2"].forEach(k => { const el = $("#f-" + k); if (s[k] && !el.value) el.value = s[k]; }); } catch(e){} cartDlg.showModal(); });
+document.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener("change", () => { $("#addrWrap").hidden = $("#m-rec").checked; }));
+
+$("#sendWa").addEventListener("click", () => {
+  const name = $("#f-name").value.trim(), barrio = $("#f-barrio").value.trim(), addr = $("#f-addr").value.trim(), addr2 = $("#f-addr2").value.trim(), notes = $("#f-notes").value.trim();
+  const mode = document.querySelector('input[name="mode"]:checked').value, dom = mode === "Domicilio";
+  $("#e-name").hidden = !!name; $("#e-barrio").hidden = !dom || !!barrio; $("#e-addr").hidden = !dom || !!addr;
+  if (!name) { $("#f-name").focus(); return; }
+  if (dom && !barrio) { $("#f-barrio").focus(); return; }
+  if (dom && !addr) { $("#f-addr").focus(); return; }
+  try { localStorage.setItem("vikingos-cliente", JSON.stringify({name, barrio, addr, addr2})); } catch(e) {}
+  const lines = [];
+  cart.forEach(l => {
+    const it = ITEMS[l.id];
+    lines.push(`• ${l.qty} × ${it.name} — ${fmt(lineTotal(l))}`);
+    if (l.sauces.length) lines.push(`   Salsas${l.qty > 1 ? " (cada combo)" : ""}: ${l.sauces.map((x,i) => (l.sauces.length > 1 ? `grupo ${i+1} ` : "") + sauceName(x)).join(", ")}`);
+    if (it.inc) lines.push(`   Incluye: ${it.inc}`);
+  });
+  const msg = [
+    "Hola Vikingos, quiero hacer este pedido:",
+    "",
+    ...lines,
+    "",
+    `Subtotal: ${fmt(subtotal())} COP (sin domicilio)`,
+    "",
+    `Nombre: ${name}`,
+    `Entrega: ${mode}`,
+    ...(dom ? [`Barrio: ${barrio}`, `Dirección: ${addr}`] : []),
+    ...(dom && addr2 ? [`Dirección adicional: ${addr2}`] : []),
+    ...(notes ? [`Observaciones: ${notes}`] : []),
+    "",
+    dom ? "¿Me confirman el valor del domicilio y el total, por favor?" : "¿Me confirman el total y en cuánto tiempo está listo, por favor?"
+  ].join("\n");
+  window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
 });
 
-/* Categoría activa con indicador deslizante */
-const chips = [...document.querySelectorAll(".chip")];
-const thumb = document.createElement("li");
-thumb.className = "thumb snap"; thumb.setAttribute("aria-hidden","true");
-$("#chips").prepend(thumb);
-let activeId = null;
-function placeThumb(snap){
-  const ch = chips.find(c => c.dataset.id === activeId); if (!ch) return;
-  thumb.classList.toggle("snap", !!snap);
-  thumb.style.width = ch.offsetWidth + "px";
-  thumb.style.transform = `translateX(${ch.offsetLeft}px)`;
-}
-addEventListener("resize", () => placeThumb(true));
-document.fonts && document.fonts.ready.then(() => placeThumb(true));
-function setActive(id, snap){
-  activeId = id; placeThumb(snap);
-  chips.forEach(ch => {
-    const on = ch.dataset.id === id;
-    ch.setAttribute("aria-current", on ? "true" : "false");
-    if (on) {
-      const bar = $("#chips");
-      const left = ch.offsetLeft - (bar.clientWidth - ch.offsetWidth) / 2;
-      bar.scrollTo({ left: Math.max(0, left), behavior: snap || matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
-    }
-  });
-}
-let jumping = false, jumpTimer;
-const io = new IntersectionObserver(es => es.forEach(e => !jumping && e.isIntersecting && setActive(e.target.id)), {rootMargin:"-90px 0px -60% 0px"});
+/* Cerrar hojas */
+document.querySelectorAll("dialog").forEach(d => {
+  d.querySelector("[data-close]").addEventListener("click", () => d.close());
+  d.addEventListener("click", e => { if (e.target === d) d.close(); });
+  d.addEventListener("close", () => { if (lastFocus && document.contains(lastFocus)) lastFocus.focus({preventScroll:true}); });
+  new MutationObserver(() => document.body.classList.toggle("locked", !!document.querySelector("dialog[open]"))).observe(d, {attributes:true, attributeFilter:["open"]});
+});
+$("#openCart").addEventListener("click", () => { lastFocus = $("#openCart"); });
 
-/* Salto limpio al tocar una categoría */
-chips.forEach(ch => ch.addEventListener("click", e => {
-  const sec = document.getElementById(ch.dataset.id); if (!sec) return;
-  e.preventDefault();
-  jumping = true; clearTimeout(jumpTimer);
-  setActive(ch.dataset.id);
-  const barH = document.querySelector(".cats").offsetHeight;
-  const top = sec.getBoundingClientRect().top + scrollY - barH + 12;
-  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-  scrollTo({ top, behavior: reduce ? "auto" : "smooth" });
-  history.replaceState(null, "", "#" + ch.dataset.id);
-  const done = () => { jumping = false; removeEventListener("scrollend", done); };
-  addEventListener("scrollend", done);
-  jumpTimer = setTimeout(done, 1200);
-}));
-document.querySelectorAll("section").forEach(s => io.observe(s));
+/* ===== Pestañas e indicador ===== */
+const tabs = [...document.querySelectorAll(".tab")], bar = $(".bar"), list = $("#tablist");
+let active = null;
+function setActive(id, snap){
+  if (id === active && !snap) return; active = id;
+  const t = tabs.find(x => x.dataset.id === id); if (!t) return;
+  tabs.forEach(x => x.setAttribute("aria-current", x === t ? "true" : "false"));
+  bar.classList.toggle("snap", !!snap);
+  bar.style.width = t.offsetWidth + "px";
+  bar.style.transform = `translateX(${t.offsetLeft}px)`;
+  list.scrollTo({ left: Math.max(0, t.offsetLeft - (list.clientWidth - t.offsetWidth)/2), behavior: snap || reduce() ? "auto" : "smooth" });
+}
+const resnap = () => { const a = active; active = null; setActive(a, true); };
+addEventListener("resize", resnap);
+document.fonts && document.fonts.ready.then(resnap);
+
+let jumping = false, jt;
+const io = new IntersectionObserver(es => es.forEach(e => !jumping && e.isIntersecting && setActive(e.target.id)), {rootMargin:"-60px 0px -65% 0px"});
+document.querySelectorAll("main section").forEach(s => io.observe(s));
 setActive(MENU[0].id, true);
 
-/* Buscador */
-const q = $("#q"), box = $("#searchBox");
+function jumpTo(id){
+  const sec = document.getElementById(id); if (!sec) return;
+  jumping = true; clearTimeout(jt); setActive(id);
+  const top = sec.getBoundingClientRect().top + scrollY - $("#tabs").offsetHeight + 1;
+  scrollTo({ top, behavior: reduce() ? "auto" : "smooth" });
+  history.replaceState(null, "", "#" + id);
+  const done = () => { jumping = false; removeEventListener("scrollend", done); };
+  addEventListener("scrollend", done); jt = setTimeout(done, 1200);
+}
+document.querySelectorAll(".tab, .tile").forEach(a => a.addEventListener("click", e => { e.preventDefault(); jumpTo(a.dataset.id); }));
+
+/* ===== Buscador ===== */
+const tabsEl = $("#tabs"), q = $("#q"), toggle = $("#searchToggle");
+toggle.addEventListener("click", () => {
+  const on = !tabsEl.classList.contains("searching");
+  tabsEl.classList.toggle("searching", on); toggle.setAttribute("aria-expanded", on);
+  if (on) q.focus(); else { q.value = ""; filter(); }
+});
 function filter(){
-  const v = norm(q.value.trim());
-  box.classList.toggle("has-value", !!q.value);
-  let any = false;
-  document.querySelectorAll("section").forEach(sec => {
+  const v = norm(q.value.trim()); let any = false;
+  document.querySelectorAll("main section").forEach(sec => {
     let n = 0;
-    sec.querySelectorAll(".card").forEach(c => { const ok = !v || c.dataset.q.includes(v); c.hidden = !ok; if (ok) n++; });
+    sec.querySelectorAll(".item").forEach(li => { const ok = !v || li.dataset.q.includes(v); li.hidden = !ok; if (ok) n++; });
+    const sc = sec.querySelector(".sauces"); if (sc) sc.hidden = !!v;
     sec.hidden = !n; if (n) any = true;
   });
   $("#empty").style.display = any ? "none" : "block";
 }
 q.addEventListener("input", filter);
-box.querySelector(".clear").addEventListener("click", () => { q.value = ""; filter(); q.focus(); });
+
+refresh();
 </script>
 </body>
 </html>
