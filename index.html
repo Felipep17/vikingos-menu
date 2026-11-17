@@ -159,6 +159,8 @@
   @keyframes up{from{transform:translateY(32px);opacity:0}to{transform:none;opacity:1}}
   @media (min-width:640px){ dialog{inset:0;margin:auto;border-radius:6px} }
   html:has(dialog[open]){overflow:hidden}
+  dialog:not([open]){display:none}
+  .dlg-fallback{display:block;z-index:50;box-shadow:0 0 0 100vmax rgba(5,14,22,.72)}
   body.locked{overflow:hidden}
   .close{position:absolute;top:10px;right:10px;z-index:3;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(251,246,236,.95);color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.25)}
   .d-img{position:relative;aspect-ratio:16/10;background:#000}
@@ -221,7 +223,12 @@
   .sugg li.other{font-weight:600;color:#94560A}
   .sugg mark{background:none;color:inherit;font-weight:700;text-decoration:underline;text-underline-offset:2px}
   .hint{font-size:14px;color:var(--ink-2);margin-top:6px}
+  .hint.ok{color:#0E6B37;font-weight:600}
   select.field{appearance:none;-webkit-appearance:none;padding-right:40px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2313202C' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center}
+  #cart{min-height:min(88dvh,100%)}
+  #cart[open]{display:flex;flex-direction:column}
+  #cart .sheet-foot{margin-top:auto}
+  @media (min-width:640px){ #cart{min-height:0} }
   .cart-empty{padding:24px 0;color:var(--ink-2)}
   .toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));z-index:40;transform:translate(-50%,20px);opacity:0;background:var(--cream);color:var(--board);padding:10px 16px;border-radius:2px;font-family:var(--cond);font-size:17px;font-weight:600;pointer-events:none;transition:opacity .2s,transform .25s var(--ease);max-width:calc(100% - 32px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
   .toast.on{opacity:1;transform:translate(-50%,0)}
@@ -281,7 +288,7 @@
   <button class="close" type="button" data-close aria-label="Cerrar">
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
   </button>
-  <div class="d-img" id="d-img"><img alt=""></div>
+  <div class="d-img" id="d-img"></div>
   <div class="sheet-body">
     <h3 id="d-name"></h3>
     <p class="desc" id="d-desc"></p>
@@ -325,15 +332,6 @@
         </div>
       </div>
       <div id="addrWrap" class="form" style="margin-top:0">
-        <div>
-          <label class="l" for="f-addr">Dirección</label>
-          <input class="field" id="f-addr" autocomplete="address-line1" placeholder="Ej.: Calle 48 # 98-20">
-          <p class="err" id="e-addr" hidden>Escribe la dirección.</p>
-        </div>
-        <div>
-          <label class="l" for="f-comuna">Comuna</label>
-          <select class="field" id="f-comuna"><option value="">Todas las comunas</option></select>
-        </div>
         <div class="combo">
           <label class="l" for="f-barrio" id="l-barrio">Barrio</label>
           <input class="field" id="f-barrio" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="b-list" autocomplete="off" placeholder="Escribe tu barrio, ej.: Valle del Lili">
@@ -344,6 +342,11 @@
             <label class="l" for="f-barrio-otro" style="margin-top:10px">¿Cuál es tu barrio?</label>
             <input class="field" id="f-barrio-otro" placeholder="Escribe el nombre de tu barrio o conjunto">
           </div>
+        </div>
+        <div>
+          <label class="l" for="f-addr">Dirección</label>
+          <input class="field" id="f-addr" autocomplete="address-line1" placeholder="Ej.: Calle 48 # 98-20">
+          <p class="err" id="e-addr" hidden>Escribe la dirección.</p>
         </div>
         <div>
           <label class="l" for="f-addr2">Dirección adicional (opcional)</label>
@@ -380,6 +383,14 @@
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
+/* Respaldo para navegadores sin <dialog> (iOS < 15.4) */
+if (typeof HTMLDialogElement !== "function") {
+  document.querySelectorAll("dialog").forEach(d => {
+    d.showModal = function(){ this.setAttribute("open",""); this.classList.add("dlg-fallback"); };
+    d.close = function(){ if (!this.hasAttribute("open")) return; this.removeAttribute("open"); this.classList.remove("dlg-fallback"); this.dispatchEvent(new Event("close")); };
+    Object.defineProperty(d, "open", { get(){ return this.hasAttribute("open"); }, configurable:true });
+  });
+}
 /* ===== Configuración ===== */
 const WHATSAPP = "573226356346";   // número con indicativo de Colombia (57)
 const SAUCES = [ {id:"bbq", name:"BBQ"}, {id:"mostaza", name:"Miel mostaza"} ];
@@ -455,7 +466,15 @@ $("#menu").innerHTML = MENU.map((c,i) => `
 
 /* ===== Carrito (se guarda en este navegador) ===== */
 let cart = [];
-try { cart = JSON.parse(localStorage.getItem("vikingos-cart") || "[]").filter(l => ITEMS[l.id]); } catch(e) { cart = []; }
+const MAXQ = 50;
+function cleanCart(raw){
+  if (!Array.isArray(raw)) return [];
+  return raw.filter(l => l && ITEMS[l.id] && Number.isInteger(l.qty) && l.qty > 0).map(l => {
+    const it = ITEMS[l.id], sauces = Array.isArray(l.sauces) ? l.sauces.filter(x => SAUCES.some(s => s.id === x)) : [];
+    return { id: l.id, qty: Math.min(MAXQ, l.qty), sauces: it.groups ? sauces : [] };
+  }).filter(l => !ITEMS[l.id].groups || l.sauces.length === ITEMS[l.id].groups);
+}
+try { cart = cleanCart(JSON.parse(localStorage.getItem("vikingos-cart") || "[]")); } catch(e) { cart = []; }
 const save = () => { try { localStorage.setItem("vikingos-cart", JSON.stringify(cart)); } catch(e) {} };
 const lineKey = (id, sauces) => id + "|" + (sauces || []).join(",");
 const lineTotal = l => ITEMS[l.id].price * l.qty;
@@ -469,7 +488,7 @@ const sauceText = s => {
 
 function addLine(id, qty, sauces){
   const key = lineKey(id, sauces), ex = cart.find(l => lineKey(l.id, l.sauces) === key);
-  if (ex) ex.qty += qty; else cart.push({ id, qty, sauces: sauces || [] });
+  if (ex) ex.qty = Math.min(MAXQ, ex.qty + qty); else cart.push({ id, qty: Math.min(MAXQ, qty), sauces: sauces || [] });
   save(); refresh(true);
   toast(`Agregado: ${qty} × ${ITEMS[id].name}${sauces && sauces.length ? " (" + sauceText(sauces) + ")" : ""}`);
 }
@@ -570,12 +589,8 @@ const ALIAS = { "Lili": "valle del lili", "Urbanización Ciudad Jardín": "ciuda
 const STOP = new Set(["de","del","la","las","el","los","y","urbanizacion","barrio","sector"]);
 const toks = s => s.split(/[\s\-.,]+/).filter(w => w.length > 1 && !STOP.has(w));
 const BARRIOS = BARRIOS_RAW.map(([n,c]) => { const k = norm(n), a = ALIAS[n] || ""; return { n, c, k, a, t: toks(k + " " + a) }; });
-const comunaSel = $("#f-comuna"), bIn = $("#f-barrio"), bList = $("#b-list"), otherWrap = $("#otherWrap"), bOther = $("#f-barrio-otro");
-const comunas = [...new Set(BARRIOS.map(b => b.c))].sort((a,b) => {
-  const ia = SOUTH.indexOf(a), ib = SOUTH.indexOf(b);
-  return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || +a - +b;
-});
-comunaSel.innerHTML = `<option value="">Todas las comunas</option>` + comunas.map(c => `<option value="${c}">${comunaName(c)}</option>`).join("");
+const bIn = $("#f-barrio"), bList = $("#b-list"), otherWrap = $("#otherWrap"), bOther = $("#f-barrio-otro"), bHint = $("#b-hint"), bErr = $("#e-barrio");
+const HINT0 = bHint.textContent;
 
 let bSel = null, isOther = false, hits = [], hi = -1;
 const bigrams = s => { const a = new Set(); for (let i = 0; i < s.length - 1; i++) a.add(s.slice(i, i+2)); return a; };
@@ -597,25 +612,26 @@ const markName = (n, q) => {
   return i < 0 ? esc(n) : esc(n.slice(0,i)) + "<mark>" + esc(n.slice(i, i+q.length)) + "</mark>" + esc(n.slice(i+q.length));
 };
 function suggest(){
-  const q = norm(bIn.value.trim()), c = comunaSel.value;
-  const pool = BARRIOS.filter(b => !c || b.c === c);
-  hits = q ? pool.map(b => [score(q,b), b]).filter(x => x[0] > 0).sort((a,b) => b[0]-a[0]).slice(0, 8).map(x => x[1])
-           : (c ? pool.slice().sort((a,b) => a.n.localeCompare(b.n, "es")) : []);
+  const q = norm(bIn.value.trim());
   hi = -1;
-  if (!q && !c) { closeList(); return; }
+  if (!q || isOther) { hits = []; closeList(); return; }
+  hits = BARRIOS.map(b => [score(q,b), b]).filter(x => x[0] > 0).sort((a,b) => b[0]-a[0]).slice(0, 8).map(x => x[1]);
   bList.innerHTML = hits.map((b,i) => `<li role="option" id="bo-${i}" data-i="${i}" aria-selected="false"><span>${markName(b.n, q)}</span><small>${comunaName(b.c)}</small></li>`).join("")
     + `<li role="option" id="bo-other" class="other" data-other="1" aria-selected="false">${hits.length ? "No está en la lista: escribir otro barrio" : "No lo encontramos. Escribir otro barrio"}</li>`;
   bList.hidden = false; bIn.setAttribute("aria-expanded", "true");
 }
 function closeList(){ bList.hidden = true; bIn.setAttribute("aria-expanded", "false"); bIn.removeAttribute("aria-activedescendant"); }
 function pick(b){
-  bSel = b; isOther = false; bIn.value = b.n; comunaSel.value = b.c;
-  otherWrap.hidden = true; $("#e-barrio").hidden = true; closeList();
+  if (!b) return;
+  bSel = b; isOther = false; bIn.value = b.n;
+  otherWrap.hidden = true; bErr.hidden = true; closeList();
+  bHint.textContent = `${comunaName(b.c)} · Cali`; bHint.classList.add("ok");
 }
 function pickOther(){
   bSel = null; isOther = true; otherWrap.hidden = false;
   if (!bOther.value) bOther.value = bIn.value.trim();
-  bIn.value = "Otro barrio"; closeList(); $("#e-barrio").hidden = true; bOther.focus();
+  bIn.value = "Otro barrio"; closeList(); bErr.hidden = true;
+  bHint.textContent = "Escribe tu barrio en el campo de abajo."; bHint.classList.remove("ok"); bOther.focus();
 }
 function moveHi(d){
   const items = [...bList.children]; if (!items.length) return;
@@ -623,8 +639,9 @@ function moveHi(d){
   items.forEach((li,i) => li.setAttribute("aria-selected", i === hi ? "true" : "false"));
   bIn.setAttribute("aria-activedescendant", items[hi].id); items[hi].scrollIntoView({block:"nearest"});
 }
-bIn.addEventListener("input", () => { bSel = null; if (isOther) { isOther = false; otherWrap.hidden = true; } suggest(); });
-bIn.addEventListener("focus", () => { if (isOther) bIn.select(); suggest(); });
+function resetHint(){ bHint.textContent = HINT0; bHint.classList.remove("ok"); }
+bIn.addEventListener("input", () => { bSel = null; resetHint(); if (isOther) { isOther = false; otherWrap.hidden = true; } suggest(); });
+bIn.addEventListener("focus", () => { if (isOther) { bIn.select(); return; } if (!bSel) suggest(); });
 bIn.addEventListener("keydown", e => {
   if (e.key === "ArrowDown") { e.preventDefault(); if (bList.hidden) suggest(); moveHi(1); }
   else if (e.key === "ArrowUp") { e.preventDefault(); moveHi(-1); }
@@ -633,25 +650,22 @@ bIn.addEventListener("keydown", e => {
 });
 bIn.addEventListener("blur", () => setTimeout(() => {
   closeList();
-  if (!bSel && !isOther) { const q = norm(bIn.value.trim()); const ex = BARRIOS.find(b => b.k === q && (!comunaSel.value || b.c === comunaSel.value)); if (ex) pick(ex); }
+  if (!bSel && !isOther) { const q = norm(bIn.value.trim()); if (!q) return; const ex = BARRIOS.find(b => b.k === q || b.a === q); if (ex) pick(ex); }
 }, 150));
 bList.addEventListener("mousedown", e => {
   const li = e.target.closest("li"); if (!li) return; e.preventDefault && e.preventDefault();
   li.dataset.other ? pickOther() : pick(hits[+li.dataset.i]);
 });
-comunaSel.addEventListener("change", () => {
-  if (bSel && comunaSel.value && bSel.c !== comunaSel.value) { bSel = null; bIn.value = ""; }
-  if (document.activeElement !== bIn && !bSel && !isOther) { bIn.focus(); }
-});
+bOther.addEventListener("input", () => { if (bOther.value.trim()) bErr.hidden = true; });
 function barrioText(){
   if (bSel) return { barrio: bSel.n, comuna: comunaName(bSel.c) };
-  if (isOther) return { barrio: bOther.value.trim() ? bOther.value.trim() + " (otro)" : "", comuna: comunaSel.value ? comunaName(comunaSel.value) : "" };
+  if (isOther) return { barrio: bOther.value.trim() ? bOther.value.trim() + " (no está en la lista)" : "", comuna: "" };
   return { barrio: "", comuna: "" };
 }
 function restoreBarrio(s){
   if (bSel || isOther) return;
-  if (s.bsel) { const b = BARRIOS.find(x => x.n === s.bsel.n && x.c === s.bsel.c); if (b) pick(b); }
-  else if (s.botro) { bOther.value = s.botro; isOther = true; otherWrap.hidden = false; bIn.value = "Otro barrio"; if (s.bcom) comunaSel.value = s.bcom; }
+  if (s.bsel && typeof s.bsel.n === "string") { const b = BARRIOS.find(x => x.n === s.bsel.n && x.c === s.bsel.c); if (b) pick(b); }
+  else if (typeof s.botro === "string" && s.botro) { bOther.value = s.botro; isOther = true; otherWrap.hidden = false; bIn.value = "Otro barrio"; bHint.textContent = "Escribe tu barrio en el campo de abajo."; }
 }
 
 /* ===== Pedido ===== */
@@ -680,12 +694,12 @@ function renderCart(){
 $("#c-list").addEventListener("click", e => {
   const d = e.target.closest("[data-dec]"), p = e.target.closest("[data-inc]");
   if (d) { const l = cart[+d.dataset.dec]; l.qty--; if (!l.qty) cart.splice(+d.dataset.dec, 1); }
-  else if (p) { cart[+p.dataset.inc].qty++; }
+  else if (p) { const l = cart[+p.dataset.inc]; if (l.qty >= MAXQ) { toast("Máximo " + MAXQ + " por producto"); return; } l.qty++; }
   else return;
   save(); refresh();
   if (!cart.length) toast("Pedido vacío");
 });
-$("#openCart").addEventListener("click", () => { renderCart(); try { const s = JSON.parse(localStorage.getItem("vikingos-cliente")||"{}"); if (s.name && !$("#f-name").value) $("#f-name").value = s.name; ["addr","addr2"].forEach(k => { const el = $("#f-" + k); if (s[k] && !el.value) el.value = s[k]; }); restoreBarrio(s); } catch(e){} cartDlg.showModal(); });
+$("#openCart").addEventListener("click", () => { renderCart(); try { const s = JSON.parse(localStorage.getItem("vikingos-cliente")||"{}"); if (s.name && !$("#f-name").value) $("#f-name").value = s.name; ["addr","addr2"].forEach(k => { const el = $("#f-" + k); if (s[k] && !el.value) el.value = s[k]; }); restoreBarrio(s); } catch(e){} setStep(false); cartDlg.showModal(); });
 document.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener("change", () => { $("#addrWrap").hidden = $("#m-rec").checked; }));
 
 function readForm(){
@@ -695,10 +709,11 @@ function readForm(){
   return {name, barrio, comuna, addr, addr2, notes, mode, dom};
 }
 function validate(f){
-  $("#e-name").hidden = !!f.name; $("#e-addr").hidden = !f.dom || !!f.addr; $("#e-barrio").hidden = !f.dom || !!f.barrio;
+  bErr.textContent = isOther ? "Escribe el nombre de tu barrio." : "Elige tu barrio de la lista o usa “Otro”.";
+  $("#e-name").hidden = !!f.name; bErr.hidden = !f.dom || !!f.barrio; $("#e-addr").hidden = !f.dom || !!f.addr;
   if (!f.name) { $("#f-name").focus(); return false; }
-  if (f.dom && !f.addr) { $("#f-addr").focus(); return false; }
   if (f.dom && !f.barrio) { (isOther ? bOther : bIn).focus(); return false; }
+  if (f.dom && !f.addr) { $("#f-addr").focus(); return false; }
   return true;
 }
 function setStep(review){
@@ -709,7 +724,7 @@ function setStep(review){
 }
 $("#toReview").addEventListener("click", () => {
   const f = readForm(); if (!validate(f)) return;
-  try { localStorage.setItem("vikingos-cliente", JSON.stringify({name:f.name, addr:f.addr, addr2:f.addr2, bsel: bSel ? {n:bSel.n, c:bSel.c} : null, botro: isOther ? bOther.value.trim() : "", bcom: comunaSel.value})); } catch(e) {}
+  try { localStorage.setItem("vikingos-cliente", JSON.stringify({name:f.name, addr:f.addr, addr2:f.addr2, bsel: bSel ? {n:bSel.n, c:bSel.c} : null, botro: isOther ? bOther.value.trim() : ""})); } catch(e) {}
   $("#preview").textContent = buildMsg(f); setStep(true); $("#r-title").focus?.();
 });
 $("#backBtn").addEventListener("click", () => setStep(false));
@@ -717,7 +732,9 @@ $("#f-notes").addEventListener("input", () => { $("#preview").textContent = buil
 cartDlg.addEventListener("close", () => setStep(false));
 $("#sendWa").addEventListener("click", () => {
   const f = readForm(); if (!cart.length) return;
-  window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(buildMsg(f))}`, "_blank", "noopener");
+  const url = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(buildMsg(f))}`;
+  let w = null; try { w = window.open(url, "_blank"); } catch(e) {}
+  if (w) { try { w.opener = null; } catch(e) {} } else { location.href = url; }
 });
 function buildMsg({name, barrio, comuna, addr, addr2, notes, mode, dom}){
   const lines = [];
@@ -736,8 +753,9 @@ function buildMsg({name, barrio, comuna, addr, addr2, notes, mode, dom}){
     "",
     `Nombre: ${name}`,
     `Entrega: ${mode}`,
-    ...(dom ? [`Dirección: ${addr}`, `Barrio: ${barrio}`] : []),
+    ...(dom ? [`Barrio: ${barrio}`] : []),
     ...(dom && comuna ? [`Comuna: ${comuna}`] : []),
+    ...(dom ? [`Dirección: ${addr}`] : []),
     ...(dom && addr2 ? [`Dirección adicional: ${addr2}`] : []),
     ...(notes ? [`Comentarios: ${notes}`] : []),
     "",
@@ -749,7 +767,7 @@ function buildMsg({name, barrio, comuna, addr, addr2, notes, mode, dom}){
 /* Cerrar hojas */
 document.querySelectorAll("dialog").forEach(d => {
   d.querySelector("[data-close]").addEventListener("click", () => d.close());
-  d.addEventListener("click", e => { if (e.target === d) d.close(); });
+  if (d.id !== "cart") d.addEventListener("click", e => { if (e.target === d) d.close(); });  // el pedido solo se cierra con la X
   d.addEventListener("close", () => { if (d.id === "sheet") stopMedia(); if (lastFocus && document.contains(lastFocus)) lastFocus.focus({preventScroll:true}); });
   new MutationObserver(() => document.body.classList.toggle("locked", !!document.querySelector("dialog[open]"))).observe(d, {attributes:true, attributeFilter:["open"]});
 });
