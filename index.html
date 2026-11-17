@@ -208,6 +208,10 @@
   .form label.l,.form .l{display:block;font-family:var(--cond);font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px}
   .form .err{color:#B42318;font-size:14px;margin-top:4px}
   .seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .back{display:inline-flex;align-items:center;gap:6px;min-height:44px;font-family:var(--cond);font-weight:700;font-size:16px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink-2);margin:-6px 0 6px -4px}
+  .r-lead{color:var(--ink-2);margin-top:6px}
+  .r-prev-t{margin-top:18px}
+  .preview{white-space:pre-wrap;word-break:break-word;font-family:var(--body);font-size:14px;line-height:1.45;background:#fff;border:1px dashed var(--paper-line);border-radius:4px;padding:12px 14px;color:var(--ink)}
   .cart-empty{padding:24px 0;color:var(--ink-2)}
   .toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));z-index:40;transform:translate(-50%,20px);opacity:0;background:var(--cream);color:var(--board);padding:10px 16px;border-radius:2px;font-family:var(--cond);font-size:17px;font-weight:600;pointer-events:none;transition:opacity .2s,transform .25s var(--ease);max-width:calc(100% - 32px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
   .toast.on{opacity:1;transform:translate(-50%,0)}
@@ -326,16 +330,29 @@
           <input class="field" id="f-addr2" autocomplete="address-line2" placeholder="Apto, torre, casa o punto de referencia">
         </div>
       </div>
-      <div>
-        <label class="l" for="f-notes">Observaciones (opcional)</label>
-        <textarea class="field" id="f-notes" placeholder="Ej.: papas sin salsa, pago en efectivo con billete de $50.000…"></textarea>
-      </div>
     </form>
   </div>
+  <div class="sheet-body review" id="review" hidden>
+    <button class="back" type="button" id="backBtn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+      Volver al pedido
+    </button>
+    <h3 id="r-title">Antes de enviar</h3>
+    <p class="r-lead">¿Quieres agregar algo más? Escríbelo aquí y lo incluimos en el mensaje.</p>
+    <div class="form" style="margin-top:14px">
+      <div>
+        <label class="l" for="f-notes">Comentarios adicionales (opcional)</label>
+        <textarea class="field" id="f-notes" rows="4" placeholder="Ej.: papas sin salsa, sin hielo, pago en efectivo con billete de $50.000, llamar al llegar…"></textarea>
+      </div>
+    </div>
+    <p class="l r-prev-t">Así se enviará tu mensaje</p>
+    <pre class="preview" id="preview"></pre>
+  </div>
   <div class="sheet-foot">
-    <button class="primary wa" type="button" id="sendWa">
+    <button class="primary" type="button" id="toReview">Continuar</button>
+    <button class="primary wa" type="button" id="sendWa" hidden>
       <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm4.5 12.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.2-.2-.5-.3Z"/></svg>
-      Enviar pedido por WhatsApp
+      Enviar por WhatsApp
     </button>
   </div>
 </dialog>
@@ -527,7 +544,7 @@ document.querySelectorAll("[data-add]").forEach(b => b.addEventListener("click",
 const cartDlg = $("#cart");
 function renderCart(){
   const empty = !cart.length;
-  $("#c-empty").hidden = !empty; $("#c-totals").hidden = empty; $("#c-form").hidden = empty; $("#sendWa").disabled = empty;
+  $("#c-empty").hidden = !empty; $("#c-totals").hidden = empty; $("#c-form").hidden = empty; $("#toReview").disabled = empty;
   $("#c-list").innerHTML = cart.map((l,i) => { const it = ITEMS[l.id]; return `
     <li>
       <img src="${it.img}-sq.webp" alt="">
@@ -557,14 +574,37 @@ $("#c-list").addEventListener("click", e => {
 $("#openCart").addEventListener("click", () => { renderCart(); try { const s = JSON.parse(localStorage.getItem("vikingos-cliente")||"{}"); if (s.name && !$("#f-name").value) $("#f-name").value = s.name; ["barrio","addr","addr2"].forEach(k => { const el = $("#f-" + k); if (s[k] && !el.value) el.value = s[k]; }); } catch(e){} cartDlg.showModal(); });
 document.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener("change", () => { $("#addrWrap").hidden = $("#m-rec").checked; }));
 
-$("#sendWa").addEventListener("click", () => {
+function readForm(){
   const name = $("#f-name").value.trim(), barrio = $("#f-barrio").value.trim(), addr = $("#f-addr").value.trim(), addr2 = $("#f-addr2").value.trim(), notes = $("#f-notes").value.trim();
   const mode = document.querySelector('input[name="mode"]:checked').value, dom = mode === "Domicilio";
-  $("#e-name").hidden = !!name; $("#e-barrio").hidden = !dom || !!barrio; $("#e-addr").hidden = !dom || !!addr;
-  if (!name) { $("#f-name").focus(); return; }
-  if (dom && !barrio) { $("#f-barrio").focus(); return; }
-  if (dom && !addr) { $("#f-addr").focus(); return; }
-  try { localStorage.setItem("vikingos-cliente", JSON.stringify({name, barrio, addr, addr2})); } catch(e) {}
+  return {name, barrio, addr, addr2, notes, mode, dom};
+}
+function validate(f){
+  $("#e-name").hidden = !!f.name; $("#e-barrio").hidden = !f.dom || !!f.barrio; $("#e-addr").hidden = !f.dom || !!f.addr;
+  if (!f.name) { $("#f-name").focus(); return false; }
+  if (f.dom && !f.barrio) { $("#f-barrio").focus(); return false; }
+  if (f.dom && !f.addr) { $("#f-addr").focus(); return false; }
+  return true;
+}
+function setStep(review){
+  $("#review").hidden = !review;
+  cartDlg.querySelector(".sheet-body:not(.review)").hidden = review;
+  $("#toReview").hidden = review; $("#sendWa").hidden = !review;
+  cartDlg.scrollTop = 0;
+}
+$("#toReview").addEventListener("click", () => {
+  const f = readForm(); if (!validate(f)) return;
+  try { localStorage.setItem("vikingos-cliente", JSON.stringify({name:f.name, barrio:f.barrio, addr:f.addr, addr2:f.addr2})); } catch(e) {}
+  $("#preview").textContent = buildMsg(f); setStep(true); $("#r-title").focus?.();
+});
+$("#backBtn").addEventListener("click", () => setStep(false));
+$("#f-notes").addEventListener("input", () => { $("#preview").textContent = buildMsg(readForm()); });
+cartDlg.addEventListener("close", () => setStep(false));
+$("#sendWa").addEventListener("click", () => {
+  const f = readForm(); if (!cart.length) return;
+  window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(buildMsg(f))}`, "_blank", "noopener");
+});
+function buildMsg({name, barrio, addr, addr2, notes, mode, dom}){
   const lines = [];
   cart.forEach(l => {
     const it = ITEMS[l.id];
@@ -583,12 +623,12 @@ $("#sendWa").addEventListener("click", () => {
     `Entrega: ${mode}`,
     ...(dom ? [`Barrio: ${barrio}`, `Dirección: ${addr}`] : []),
     ...(dom && addr2 ? [`Dirección adicional: ${addr2}`] : []),
-    ...(notes ? [`Observaciones: ${notes}`] : []),
+    ...(notes ? [`Comentarios: ${notes}`] : []),
     "",
     dom ? "¿Me confirman el valor del domicilio y el total, por favor?" : "¿Me confirman el total y en cuánto tiempo está listo, por favor?"
   ].join("\n");
-  window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(msg)}`, "_blank", "noopener");
-});
+  return msg;
+}
 
 /* Cerrar hojas */
 document.querySelectorAll("dialog").forEach(d => {
