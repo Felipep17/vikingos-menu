@@ -243,9 +243,9 @@
     <h1>Vikingos</h1>
     <p class="sub">Bar &amp; Food</p>
     <p class="tag">Porque comer te hace fuerte</p>
-    <a class="order" href="https://wa.me/573226356346" target="_blank" rel="noopener">
+    <a class="order" href="https://wa.me/573122365137" target="_blank" rel="noopener">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm4.5 12.1c-.2-.1-1.5-.7-1.7-.8-.2-.1-.4-.1-.6.1l-.8 1c-.1.2-.3.2-.5.1a6.7 6.7 0 0 1-3.3-2.9c-.2-.4.2-.4.7-1.3.1-.2 0-.3 0-.4l-.8-1.8c-.2-.5-.4-.4-.6-.4h-.5a1 1 0 0 0-.7.3 3 3 0 0 0-.9 2.2 5.2 5.2 0 0 0 1.1 2.7 11.8 11.8 0 0 0 4.5 4c1.7.7 2.3.8 3.2.6.5-.1 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2-.1-.1-.2-.2-.5-.3Z"/></svg>
-      Pedidos 322 635 6346
+      Pedidos 312 236 5137
     </a>
   </header>
 
@@ -270,7 +270,7 @@
   <footer>
     <img src="img/mark.svg" alt="" width="56" height="56">
     <b>Vikingos Bar &amp; Food</b>
-    <p>Pedidos por WhatsApp: <a href="https://wa.me/573226356346" target="_blank" rel="noopener">322 635 6346</a></p>
+    <p>Pedidos por WhatsApp: <a href="https://wa.me/573122365137" target="_blank" rel="noopener">312 236 5137</a></p>
     <p>Precios en pesos colombianos (COP). Domicilio no incluido.</p>
   </footer>
 </div>
@@ -323,6 +323,11 @@
         <label class="l" for="f-name">Tu nombre</label>
         <input class="field" id="f-name" autocomplete="name" required>
         <p class="err" id="e-name" hidden>Escribe tu nombre.</p>
+      </div>
+      <div>
+        <label class="l" for="f-cel">Tu celular</label>
+        <input class="field" id="f-cel" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="14" placeholder="Ej.: 300 123 4567" required>
+        <p class="err" id="e-cel" hidden>Escribe tu celular de 10 dígitos.</p>
       </div>
       <div>
         <span class="l" id="l-mode" style="display:block;font-weight:700;font-size:15px;margin-bottom:6px">¿Cómo lo recibes?</span>
@@ -392,7 +397,10 @@ if (typeof HTMLDialogElement !== "function") {
   });
 }
 /* ===== Configuración ===== */
-const WHATSAPP = "573226356346";   // número con indicativo de Colombia (57)
+const WHATSAPP = "573122365137";   // número con indicativo de Colombia (57)
+/* Registro de pedidos en Google Sheets (ver ../registro-pedidos/INSTRUCCIONES.md).
+   Pega aquí la URL de la app web de Apps Script (termina en /exec). Vacío = no se registra nada. */
+const PEDIDOS_URL = "https://script.google.com/macros/s/AKfycbz-IlNW_HjdudHH4-btfgOixJYSJXesgEH10naWoeP-iQk0_inlq8Qx0oj2kCQe_n4/exec";
 const SAUCES = [ {id:"bbq", name:"BBQ"}, {id:"mostaza", name:"Miel mostaza"} ];
 
 /* Barrios de Cali (nombre oficial, comuna). 81 = Zona de expansión */
@@ -699,19 +707,21 @@ $("#c-list").addEventListener("click", e => {
   save(); refresh();
   if (!cart.length) toast("Pedido vacío");
 });
-$("#openCart").addEventListener("click", () => { renderCart(); try { const s = JSON.parse(localStorage.getItem("vikingos-cliente")||"{}"); if (s.name && !$("#f-name").value) $("#f-name").value = s.name; ["addr","addr2"].forEach(k => { const el = $("#f-" + k); if (s[k] && !el.value) el.value = s[k]; }); restoreBarrio(s); } catch(e){} setStep(false); cartDlg.showModal(); });
+$("#openCart").addEventListener("click", () => { renderCart(); try { const s = JSON.parse(localStorage.getItem("vikingos-cliente")||"{}"); if (s.name && !$("#f-name").value) $("#f-name").value = s.name; ["cel","addr","addr2"].forEach(k => { const el = $("#f-" + k); if (s[k] && !el.value) el.value = s[k]; }); restoreBarrio(s); } catch(e){} setStep(false); cartDlg.showModal(); });
 document.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener("change", () => { $("#addrWrap").hidden = $("#m-rec").checked; }));
 
 function readForm(){
-  const name = $("#f-name").value.trim(), addr = $("#f-addr").value.trim(), addr2 = $("#f-addr2").value.trim(), notes = $("#f-notes").value.trim();
+  const name = $("#f-name").value.trim(), cel = celDigits($("#f-cel").value), addr = $("#f-addr").value.trim(), addr2 = $("#f-addr2").value.trim(), notes = $("#f-notes").value.trim();
   const { barrio, comuna } = barrioText();
   const mode = document.querySelector('input[name="mode"]:checked').value, dom = mode === "Domicilio";
-  return {name, barrio, comuna, addr, addr2, notes, mode, dom};
+  return {name, cel, barrio, comuna, addr, addr2, notes, mode, dom};
 }
 function validate(f){
   bErr.textContent = isOther ? "Escribe el nombre de tu barrio." : "Elige tu barrio de la lista o usa “Otro”.";
-  $("#e-name").hidden = !!f.name; bErr.hidden = !f.dom || !!f.barrio; $("#e-addr").hidden = !f.dom || !!f.addr;
+  const celOk = /^3\d{9}$/.test(f.cel);
+  $("#e-name").hidden = !!f.name; $("#e-cel").hidden = celOk; bErr.hidden = !f.dom || !!f.barrio; $("#e-addr").hidden = !f.dom || !!f.addr;
   if (!f.name) { $("#f-name").focus(); return false; }
+  if (!celOk) { $("#f-cel").focus(); return false; }
   if (f.dom && !f.barrio) { (isOther ? bOther : bIn).focus(); return false; }
   if (f.dom && !f.addr) { $("#f-addr").focus(); return false; }
   return true;
@@ -724,7 +734,8 @@ function setStep(review){
 }
 $("#toReview").addEventListener("click", () => {
   const f = readForm(); if (!validate(f)) return;
-  try { localStorage.setItem("vikingos-cliente", JSON.stringify({name:f.name, addr:f.addr, addr2:f.addr2, bsel: bSel ? {n:bSel.n, c:bSel.c} : null, botro: isOther ? bOther.value.trim() : ""})); } catch(e) {}
+  try { localStorage.setItem("vikingos-cliente", JSON.stringify({name:f.name, cel:f.cel, addr:f.addr, addr2:f.addr2, bsel: bSel ? {n:bSel.n, c:bSel.c} : null, botro: isOther ? bOther.value.trim() : ""})); } catch(e) {}
+  orderId = newOrderId();
   $("#preview").textContent = buildMsg(f); setStep(true); $("#r-title").focus?.();
 });
 $("#backBtn").addEventListener("click", () => setStep(false));
@@ -732,11 +743,33 @@ $("#f-notes").addEventListener("input", () => { $("#preview").textContent = buil
 cartDlg.addEventListener("close", () => setStep(false));
 $("#sendWa").addEventListener("click", () => {
   const f = readForm(); if (!cart.length) return;
+  logOrder(f);
   const url = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(buildMsg(f))}`;
   let w = null; try { w = window.open(url, "_blank"); } catch(e) {}
   if (w) { try { w.opener = null; } catch(e) {} } else { location.href = url; }
 });
-function buildMsg({name, barrio, comuna, addr, addr2, notes, mode, dom}){
+/* ===== Registro del pedido (Google Sheets) ===== */
+let orderId = "";
+const celDigits = v => { let d = String(v || "").replace(/\D/g, ""); if (d.length === 12 && d.startsWith("57")) d = d.slice(2); return d; };
+function newOrderId(){
+  const d = new Date(), p = n => String(n).padStart(2, "0"), abc = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  let r = ""; const a = new Uint8Array(5);
+  try { crypto.getRandomValues(a); } catch(e) { a.forEach((_, i) => a[i] = Math.random() * 256); }
+  a.forEach(x => r += abc[x % abc.length]);
+  return `V${String(d.getFullYear()).slice(2)}${p(d.getMonth() + 1)}${p(d.getDate())}-${r}`;
+}
+const CAT = {}; MENU.forEach(c => c.items.forEach(it => CAT[it.id] = c.name));
+function logOrder(f){
+  if (!PEDIDOS_URL || !orderId) return;
+  const data = {
+    id: orderId, cliente: f.name, celular: f.cel, entrega: f.mode,
+    barrio: f.dom ? f.barrio : "", comuna: f.dom ? f.comuna : "", direccion: f.dom ? f.addr : "", direccion2: f.dom ? f.addr2 : "",
+    comentarios: f.notes,
+    items: cart.map(l => ({ categoria: CAT[l.id], producto: ITEMS[l.id].name, salsas: sauceText(l.sauces), cantidad: l.qty, precio: ITEMS[l.id].price }))
+  };
+  try { fetch(PEDIDOS_URL, { method: "POST", mode: "no-cors", keepalive: true, headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(data) }).catch(() => {}); } catch(e) {}
+}
+function buildMsg({name, cel, barrio, comuna, addr, addr2, notes, mode, dom}){
   const lines = [];
   cart.forEach(l => {
     const it = ITEMS[l.id];
@@ -746,12 +779,14 @@ function buildMsg({name, barrio, comuna, addr, addr2, notes, mode, dom}){
   });
   const msg = [
     "Hola Vikingos, quiero hacer este pedido:",
+    ...(orderId ? [`Pedido #${orderId}`] : []),
     "",
     ...lines,
     "",
     `Subtotal: ${fmt(subtotal())} COP (sin domicilio)`,
     "",
     `Nombre: ${name}`,
+    ...(cel ? [`Celular: ${cel}`] : []),
     `Entrega: ${mode}`,
     ...(dom ? [`Barrio: ${barrio}`] : []),
     ...(dom && comuna ? [`Comuna: ${comuna}`] : []),
