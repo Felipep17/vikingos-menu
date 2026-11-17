@@ -212,6 +212,16 @@
   .r-lead{color:var(--ink-2);margin-top:6px}
   .r-prev-t{margin-top:18px}
   .preview{white-space:pre-wrap;word-break:break-word;font-family:var(--body);font-size:14px;line-height:1.45;background:#fff;border:1px dashed var(--paper-line);border-radius:4px;padding:12px 14px;color:var(--ink)}
+  .combo{position:relative}
+  .sugg{position:absolute;left:0;right:0;z-index:6;list-style:none;margin-top:4px;background:#fff;border:1.5px solid var(--ink);border-radius:4px;max-height:280px;overflow:auto;box-shadow:0 12px 28px -10px rgba(0,0,0,.35)}
+  .sugg li{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:46px;padding:8px 14px;cursor:pointer;border-bottom:1px solid var(--paper-line)}
+  .sugg li:last-child{border-bottom:none}
+  .sugg li small{color:var(--ink-2);font-size:13px;white-space:nowrap}
+  .sugg li[aria-selected="true"],.sugg li:hover{background:#FFF3DC}
+  .sugg li.other{font-weight:600;color:#94560A}
+  .sugg mark{background:none;color:inherit;font-weight:700;text-decoration:underline;text-underline-offset:2px}
+  .hint{font-size:14px;color:var(--ink-2);margin-top:6px}
+  select.field{appearance:none;-webkit-appearance:none;padding-right:40px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2313202C' stroke-width='2.5' stroke-linecap='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 12px center}
   .cart-empty{padding:24px 0;color:var(--ink-2)}
   .toast{position:fixed;left:50%;bottom:calc(88px + env(safe-area-inset-bottom));z-index:40;transform:translate(-50%,20px);opacity:0;background:var(--cream);color:var(--board);padding:10px 16px;border-radius:2px;font-family:var(--cond);font-size:17px;font-weight:600;pointer-events:none;transition:opacity .2s,transform .25s var(--ease);max-width:calc(100% - 32px);box-shadow:0 8px 24px rgba(0,0,0,.4)}
   .toast.on{opacity:1;transform:translate(-50%,0)}
@@ -316,14 +326,24 @@
       </div>
       <div id="addrWrap" class="form" style="margin-top:0">
         <div>
-          <label class="l" for="f-barrio">Barrio</label>
-          <input class="field" id="f-barrio" autocomplete="address-level3" placeholder="Ej.: San Fernando">
-          <p class="err" id="e-barrio" hidden>Escribe el barrio.</p>
+          <label class="l" for="f-addr">Dirección</label>
+          <input class="field" id="f-addr" autocomplete="address-line1" placeholder="Ej.: Calle 48 # 98-20">
+          <p class="err" id="e-addr" hidden>Escribe la dirección.</p>
         </div>
         <div>
-          <label class="l" for="f-addr">Dirección</label>
-          <input class="field" id="f-addr" autocomplete="address-line1" placeholder="Ej.: Calle 5 # 38-20">
-          <p class="err" id="e-addr" hidden>Escribe la dirección.</p>
+          <label class="l" for="f-comuna">Comuna</label>
+          <select class="field" id="f-comuna"><option value="">Todas las comunas</option></select>
+        </div>
+        <div class="combo">
+          <label class="l" for="f-barrio" id="l-barrio">Barrio</label>
+          <input class="field" id="f-barrio" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="b-list" autocomplete="off" placeholder="Escribe tu barrio, ej.: Valle del Lili">
+          <ul class="sugg" id="b-list" role="listbox" aria-labelledby="l-barrio" hidden></ul>
+          <p class="hint" id="b-hint">Escribe y elige tu barrio de la lista.</p>
+          <p class="err" id="e-barrio" hidden>Elige tu barrio de la lista o usa “Otro”.</p>
+          <div id="otherWrap" hidden>
+            <label class="l" for="f-barrio-otro" style="margin-top:10px">¿Cuál es tu barrio?</label>
+            <input class="field" id="f-barrio-otro" placeholder="Escribe el nombre de tu barrio o conjunto">
+          </div>
         </div>
         <div>
           <label class="l" for="f-addr2">Dirección adicional (opcional)</label>
@@ -363,6 +383,9 @@
 /* ===== Configuración ===== */
 const WHATSAPP = "573226356346";   // número con indicativo de Colombia (57)
 const SAUCES = [ {id:"bbq", name:"BBQ"}, {id:"mostaza", name:"Miel mostaza"} ];
+
+/* Barrios de Cali (nombre oficial, comuna). 81 = Zona de expansión */
+const BARRIOS_RAW = [["Ciudadela Floralia","06"],["Menga","02"],["Paso del Comercio","06"],["Los Guaduales","06"],["Senderos de La Flora","02"],["Urbanización La Flora","02"],["Altos de Menga","02"],["La Campiña","02"],["Lili","17"],["Urbanización Calimio","06"],["San Luis II","06"],["Sector Puente del Comercio","06"],["Los Alcazares","06"],["Ciudad de Los Alamos","02"],["Rafael Uribe Uribe","08"],["La Flora","02"],["Calima","04"],["Vipasa","02"],["San Luis","06"],["El Bosque","02"],["Fonaviemcali","06"],["Metropolitano del Norte","05"],["Chiminangos I","05"],["Flora Industrial","04"],["Villa del Sol","05"],["Urbanización La Merced","02"],["La Paz","02"],["Petecuy Segunda Etapa","06"],["Los Parques Barranquilla","05"],["Chiminangos II","05"],["Olaya Herrera","04"],["Chipichape","02"],["Torres de Comfandi","05"],["Petecuy Tercera Etapa","06"],["Evaristo Garcia","04"],["La Isla","04"],["Jorge Eliécer Gaitán","06"],["Prados del Norte","02"],["La Rivera I","06"],["Los Guayacanes","05"],["Petecuy Primera Etapa","06"],["La Alianza","04"],["Las Delicias","04"],["Guillermo Valencia","04"],["Marco Fidel Suárez","04"],["Paseo de Los Almendros","05"],["Santa Mónica","02"],["San Vicente","02"],["Los Andes","05"],["Ignacio Rengifo","04"],["Industria de Licores","04"],["El Sena","05"],["Popular","04"],["Bolivariano","04"],["Los Andes B - La Riviera","05"],["Manzanares","04"],["Unidad Residencial Bueno Madrid","04"],["Salomia","04"],["Sultana - Berlín - San Francisco","04"],["El Hoyo","03"],["Alfonso Lopez P. 1a Etapa","07"],["Sector Patio Bonito","01"],["Santander","04"],["Fepicol","07"],["Fátima","04"],["Base Aérea","07"],["Versalles","02"],["Aguacatal","01"],["Las Ceibas","07"],["Granada","02"],["El Piloto","03"],["La Merced","03"],["Alfonso Lopez P. 2a Etapa","07"],["Porvenir","04"],["San Marino","07"],["La Esmeralda","04"],["Jorge Isaacs","04"],["San Nicolás","03"],["Los Pinos","07"],["Vista Hermosa","01"],["Juanambú","02"],["Parque de la Caña","07"],["Puerto Nuevo","07"],["Barrio Obrero","09"],["Industrial","08"],["Alfonso Lopez P. 3a Etapa","07"],["San Pedro","03"],["Normandia","02"],["Terron Colorado","01"],["Centenario","02"],["Santa Rita","02"],["Santa Teresita","02"],["El Troncal","08"],["Villa Colombia","08"],["Urbanización La Nueva Base","08"],["La Base","08"],["Siete de Agosto","07"],["Arboledas","02"],["Municipal","08"],["San Cayetano","03"],["Sucre","09"],["El Peñón","03"],["Urbanización El Angel del Hogar","07"],["El Calvario","03"],["San Antonio","03"],["Las Américas","08"],["Benjamín Herrera","08"],["Planta de Tratamiento","21"],["Santa Rosa","03"],["Atanasio Girardot","08"],["Chapinero","08"],["Bellavista","19"],["La Floresta","08"],["El Trébol","08"],["San Pascual","03"],["San Juan Bosco","03"],["Saavedra Galindo","08"],["Santa Bárbara","19"],["Belalcázar","09"],["Simón Bolívar","08"],["El Nacional","03"],["Ulpiano Lloreda","13"],["Santa Mónica Popular","08"],["Navarro - La Chanca","03"],["Charco Azul","13"],["Miraflores","19"],["Tejares - Cristales","19"],["Las Acacias","10"],["Nueva Floresta","12"],["El Mortiñal","19"],["Santa Fé","08"],["Los Libertadores","03"],["Lleras Restrepo II","13"],["Guayaquil","09"],["Bretaña","09"],["San Fernando Viejo","19"],["Alameda","09"],["José Manuel Marroquín II","14"],["Manuel Maria Buenaventura","09"],["Alirio Mora Beltrán","14"],["Valle Grande","21"],["Primitivo Crespo","08"],["Villa del Lago","13"],["Sector Laguna del Pondaje","13"],["Fenalco Kennedy","12"],["Asturias","12"],["Los Naranjos","14"],["El Rodeo","12"],["Santa Mónica Belalcázar","09"],["Aranjuez","09"],["Lleras Restrepo","13"],["El Cedro","19"],["3 de Julio","19"],["El Pondaje","13"],["Ciudad Talanga","21"],["20 de Julio","11"],["Los Naranjos II","14"],["El Prado","11"],["Junín","09"],["Villanueva","12"],["Ricardo Balcázar","13"],["San Cristóbal","10"],["Aguablanca","11"],["Prados de Oriente","11"],["Marroquín III","13"],["Unidad Deportiva Jaime Aparicio","19"],["Puerta del Sol","14"],["Bello Horizonte","12"],["Santa Isabel","19"],["Urbanización Colseguros","19"],["El Paraíso","12"],["Compartir","21"],["Santa Elena","10"],["Sindical","12"],["San Fernando Nuevo","19"],["Los Lagos","13"],["Colseguros Andes","10"],["Villablanca","13"],["El Recuerdo","11"],["Eduardo Santos","12"],["San Benito","11"],["Promociones Populares B","14"],["Ciudadela del Rio - CVC","21"],["Doce de Octubre","12"],["Desepaz Invicali","21"],["Belén","20"],["Olímpico","10"],["El Jardín","11"],["Julio Rincón","12"],["Rodrigo Lara Bonilla","13"],["Yira Castro","13"],["Los Comuneros II","13"],["José María Córdoba","11"],["La Fortaleza","11"],["Eucaristico","19"],["Cristóbal Colón","10"],["León XIII","11"],["Los Conquistadores","11"],["Omar Torrijos","13"],["José Manuel Marroquín I","14"],["Calipso","13"],["San Pedro Claver","11"],["Alfonso Bonilla Aragón","14"],["Urbanización Boyaca","11"],["Los Robles","13"],["Manuela Beltrán","14"],["Urbanización Nueva Granada","19"],["San Carlos","11"],["La Libertad","10"],["Sector Asprosocial - Diamante","13"],["El Diamante","13"],["Primavera","11"],["Urbanización Tequendama","19"],["El Poblado II","13"],["La Esperanza","11"],["El Lido","19"],["La Gran Colombia","11"],["El Dorado","10"],["El Poblado I","13"],["Los Cámbulos","19"],["Los Lideres","21"],["Antonio Nariño","16"],["Departamental","10"],["El Remanso","21"],["Pasoancho","10"],["Los Sauces","11"],["Maracaibo","11"],["La Independencia","11"],["El Vergel","13"],["El Guabal","10"],["Calimio Desepaz","21"],["Las Orquídeas","14"],["Mojica","15"],["Unidad Residencial Santiago de Cali","19"],["Nueva Tequendama","19"],["El Cortijo","20"],["Pueblo Joven","20"],["Villa del Sur","11"],["Panamericano","10"],["Belisario Caicedo","20"],["Los Comuneros I","15"],["Urbanización Militar","19"],["Laureano Gómez","15"],["San Judas Tadeo II","10"],["Unidad Residencial El Coliseo","19"],["Unión de Vivienda Popular","16"],["Santo Domingo","10"],["Venezuela - Urbanización Cañaveralejo","20"],["U. D. A. Galindo Plaza de Toros","19"],["El Retiro","15"],["La Selva","10"],["Sector Cañaveralejo Guadalupe","19"],["Jorge Zawadsky","10"],["República de Israel","16"],["Las Granjas","10"],["San Judas Tadeo I","10"],["Villamercedes I - Villa Luz - Las Garzas","21"],["Potrero Grande","21"],["Camino Real - Joaquin Borrero Sinisterra","19"],["Cuarto de Legua - Guadalupe","19"],["Cañaveral","19"],["Camino Real - Los Fundadores","19"],["Mariano Ramos","16"],["Pampa Linda","19"],["El Vallado","15"],["Pizamos III - Las Dalias","21"],["Santa Anita - La Selva","17"],["José Holguín Garcés","11"],["Pizamos II","21"],["Primero de Mayo","17"],["Ciudad Córdoba","15"],["El Limonar","17"],["Cañaverales - Los Samanes","17"],["Cañaveralejo - Seguros Patria","19"],["La Cascada","19"],["El Refugio","19"],["El Gran Limonar","17"],["La Alborada","16"],["Pizamos I","21"],["El Gran Limonar - Cataya","17"],["El Morichal","15"],["Brisas del Limonar","16"],["Bosques del Limonar","17"],["Ciudad 2000","16"],["La Hacienda","17"],["Caldas","18"],["Los Portales - Nuevo Rey","17"],["Los Chorros","18"],["Sector Alto de los Chorros","18"],["Buenos Aires","18"],["Vendimia","16"],["Lourdes","18"],["Prados del Limonar","17"],["Ciudad Capri","17"],["Los Farallones","18"],["Las Quintas de Don Simón","17"],["Alférez Real","18"],["Francisco Eladio Ramírez","18"],["Caney","17"],["Ciudadela Comfandi","17"],["Prados del Sur","18"],["Alto Nápoles","18"],["Colinas del Sur","18"],["Mario Correa Rengifo","18"],["Ciudadela Pasoancho","17"],["Nápoles","18"],["El Ingenio","17"],["Mayapan - Las Vegas","17"],["Meléndez","18"],["Sector Alto Jordán","18"],["Ciudad Universitaria","17"],["Urbanización San Joaquin","17"],["Cuarteles de Nápoles","18"],["Unicentro Cali","17"],["El Jordán","18"],["Horizontes","18"],["Polvorines","18"],["Ciudad Campestre","22"],["Urbanización Ciudad Jardín","22"],["Sector Meléndez","18"],["La Playa","17"],["Club Campestre","22"],["Champagnat","19"],["Sector Altos de Santa Isabel","19"],["Urbanización Rio Lili","22"],["Parcelaciones Pance","22"],["Villa del Prado - El Guabito","05"],["Puerto Mallarino","07"],["La Sultana","20"],["Lleras Camargo","20"],["Brisas de Mayo","20"],["Tierra Blanca","20"],["Siloé","20"],["Alto Normandia","02"],["Brisas de Los Alamos","02"],["Alfonso Barberena A.","12"],["Portada de Comfandi - Las Encinas","06"],["Zonamérica","81"],["Las Vegas","81"],["Piedrachiquita","81"],["Ciudad Meléndez 1","81"],["Las Vegas del Lili","81"],["Ciudad Meléndez 2","81"],["Lituania - Dalandia","81"],["El Verdal - Gonchelandia","81"],["El Capricho 1","81"],["El Marañón","81"],["Marañón Bajo","81"],["El Guayabal 2","81"],["El Guayabal 1","81"],["Bochalema","81"],["Cachipay","81"],["Andalucía","81"],["PP1","81"],["El Capricho 2","81"],["PP4-PP5","81"],["PP6-PP8-PP10","81"]];
 
 /* ===== Menú: edita aquí nombres, precios y fotos ===== */
 const MENU = [
@@ -540,6 +563,97 @@ document.querySelectorAll("[data-add]").forEach(b => b.addEventListener("click",
   if (it.groups) openItem(it.id); else addLine(it.id, 1, []);
 }));
 
+/* ===== Comuna y barrio con sugerencias ===== */
+const SOUTH = ["81","22","17","18","16","15","10","19"];
+const comunaName = c => c === "81" ? "Zona de expansión" : `Comuna ${+c}`;
+const ALIAS = { "Lili": "valle del lili", "Urbanización Ciudad Jardín": "ciudad jardin", "Parcelaciones Pance": "pance", "Urbanización Rio Lili": "rio lili" };
+const STOP = new Set(["de","del","la","las","el","los","y","urbanizacion","barrio","sector"]);
+const toks = s => s.split(/[\s\-.,]+/).filter(w => w.length > 1 && !STOP.has(w));
+const BARRIOS = BARRIOS_RAW.map(([n,c]) => { const k = norm(n), a = ALIAS[n] || ""; return { n, c, k, a, t: toks(k + " " + a) }; });
+const comunaSel = $("#f-comuna"), bIn = $("#f-barrio"), bList = $("#b-list"), otherWrap = $("#otherWrap"), bOther = $("#f-barrio-otro");
+const comunas = [...new Set(BARRIOS.map(b => b.c))].sort((a,b) => {
+  const ia = SOUTH.indexOf(a), ib = SOUTH.indexOf(b);
+  return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || +a - +b;
+});
+comunaSel.innerHTML = `<option value="">Todas las comunas</option>` + comunas.map(c => `<option value="${c}">${comunaName(c)}</option>`).join("");
+
+let bSel = null, isOther = false, hits = [], hi = -1;
+const bigrams = s => { const a = new Set(); for (let i = 0; i < s.length - 1; i++) a.add(s.slice(i, i+2)); return a; };
+const dice = (a, b) => { const A = bigrams(a), B = bigrams(b); if (!A.size || !B.size) return 0; let n = 0; A.forEach(x => B.has(x) && n++); return 2*n/(A.size + B.size); };
+function score(q, b){
+  const k = b.k, south = SOUTH.includes(b.c) ? 15 : 0;
+  if (k === q || b.a === q) return 1000;
+  if (k.startsWith(q) || (b.a && b.a.startsWith(q))) return 900 - k.length + south;
+  if (b.t.some(w => w.startsWith(q))) return 800 - k.length + south;
+  if (k.includes(q)) return 700 - k.length + south;
+  const qt = toks(q); if (!qt.length) return 0;
+  // cada palabra escrita se compara con la palabra más parecida del barrio
+  const per = qt.map(w => Math.max(0, ...b.t.map(t => t === w ? 1 : t.startsWith(w) && w.length > 2 ? .9 : dice(w, t))));
+  const avg = per.reduce((x,y) => x + y, 0) / qt.length;
+  return avg >= 0.5 ? avg * 600 - b.t.length * 4 + south : 0;
+}
+const markName = (n, q) => {
+  const k = norm(n), i = q ? k.indexOf(q) : -1;
+  return i < 0 ? esc(n) : esc(n.slice(0,i)) + "<mark>" + esc(n.slice(i, i+q.length)) + "</mark>" + esc(n.slice(i+q.length));
+};
+function suggest(){
+  const q = norm(bIn.value.trim()), c = comunaSel.value;
+  const pool = BARRIOS.filter(b => !c || b.c === c);
+  hits = q ? pool.map(b => [score(q,b), b]).filter(x => x[0] > 0).sort((a,b) => b[0]-a[0]).slice(0, 8).map(x => x[1])
+           : (c ? pool.slice().sort((a,b) => a.n.localeCompare(b.n, "es")) : []);
+  hi = -1;
+  if (!q && !c) { closeList(); return; }
+  bList.innerHTML = hits.map((b,i) => `<li role="option" id="bo-${i}" data-i="${i}" aria-selected="false"><span>${markName(b.n, q)}</span><small>${comunaName(b.c)}</small></li>`).join("")
+    + `<li role="option" id="bo-other" class="other" data-other="1" aria-selected="false">${hits.length ? "No está en la lista: escribir otro barrio" : "No lo encontramos. Escribir otro barrio"}</li>`;
+  bList.hidden = false; bIn.setAttribute("aria-expanded", "true");
+}
+function closeList(){ bList.hidden = true; bIn.setAttribute("aria-expanded", "false"); bIn.removeAttribute("aria-activedescendant"); }
+function pick(b){
+  bSel = b; isOther = false; bIn.value = b.n; comunaSel.value = b.c;
+  otherWrap.hidden = true; $("#e-barrio").hidden = true; closeList();
+}
+function pickOther(){
+  bSel = null; isOther = true; otherWrap.hidden = false;
+  if (!bOther.value) bOther.value = bIn.value.trim();
+  bIn.value = "Otro barrio"; closeList(); $("#e-barrio").hidden = true; bOther.focus();
+}
+function moveHi(d){
+  const items = [...bList.children]; if (!items.length) return;
+  hi = (hi + d + items.length) % items.length;
+  items.forEach((li,i) => li.setAttribute("aria-selected", i === hi ? "true" : "false"));
+  bIn.setAttribute("aria-activedescendant", items[hi].id); items[hi].scrollIntoView({block:"nearest"});
+}
+bIn.addEventListener("input", () => { bSel = null; if (isOther) { isOther = false; otherWrap.hidden = true; } suggest(); });
+bIn.addEventListener("focus", () => { if (isOther) bIn.select(); suggest(); });
+bIn.addEventListener("keydown", e => {
+  if (e.key === "ArrowDown") { e.preventDefault(); if (bList.hidden) suggest(); moveHi(1); }
+  else if (e.key === "ArrowUp") { e.preventDefault(); moveHi(-1); }
+  else if (e.key === "Enter" && !bList.hidden) { e.preventDefault(); const li = bList.children[hi < 0 ? 0 : hi]; li && li.dispatchEvent(new Event("mousedown", {bubbles:true})); }
+  else if (e.key === "Escape") closeList();
+});
+bIn.addEventListener("blur", () => setTimeout(() => {
+  closeList();
+  if (!bSel && !isOther) { const q = norm(bIn.value.trim()); const ex = BARRIOS.find(b => b.k === q && (!comunaSel.value || b.c === comunaSel.value)); if (ex) pick(ex); }
+}, 150));
+bList.addEventListener("mousedown", e => {
+  const li = e.target.closest("li"); if (!li) return; e.preventDefault && e.preventDefault();
+  li.dataset.other ? pickOther() : pick(hits[+li.dataset.i]);
+});
+comunaSel.addEventListener("change", () => {
+  if (bSel && comunaSel.value && bSel.c !== comunaSel.value) { bSel = null; bIn.value = ""; }
+  if (document.activeElement !== bIn && !bSel && !isOther) { bIn.focus(); }
+});
+function barrioText(){
+  if (bSel) return { barrio: bSel.n, comuna: comunaName(bSel.c) };
+  if (isOther) return { barrio: bOther.value.trim() ? bOther.value.trim() + " (otro)" : "", comuna: comunaSel.value ? comunaName(comunaSel.value) : "" };
+  return { barrio: "", comuna: "" };
+}
+function restoreBarrio(s){
+  if (bSel || isOther) return;
+  if (s.bsel) { const b = BARRIOS.find(x => x.n === s.bsel.n && x.c === s.bsel.c); if (b) pick(b); }
+  else if (s.botro) { bOther.value = s.botro; isOther = true; otherWrap.hidden = false; bIn.value = "Otro barrio"; if (s.bcom) comunaSel.value = s.bcom; }
+}
+
 /* ===== Pedido ===== */
 const cartDlg = $("#cart");
 function renderCart(){
@@ -571,19 +685,20 @@ $("#c-list").addEventListener("click", e => {
   save(); refresh();
   if (!cart.length) toast("Pedido vacío");
 });
-$("#openCart").addEventListener("click", () => { renderCart(); try { const s = JSON.parse(localStorage.getItem("vikingos-cliente")||"{}"); if (s.name && !$("#f-name").value) $("#f-name").value = s.name; ["barrio","addr","addr2"].forEach(k => { const el = $("#f-" + k); if (s[k] && !el.value) el.value = s[k]; }); } catch(e){} cartDlg.showModal(); });
+$("#openCart").addEventListener("click", () => { renderCart(); try { const s = JSON.parse(localStorage.getItem("vikingos-cliente")||"{}"); if (s.name && !$("#f-name").value) $("#f-name").value = s.name; ["addr","addr2"].forEach(k => { const el = $("#f-" + k); if (s[k] && !el.value) el.value = s[k]; }); restoreBarrio(s); } catch(e){} cartDlg.showModal(); });
 document.querySelectorAll('input[name="mode"]').forEach(r => r.addEventListener("change", () => { $("#addrWrap").hidden = $("#m-rec").checked; }));
 
 function readForm(){
-  const name = $("#f-name").value.trim(), barrio = $("#f-barrio").value.trim(), addr = $("#f-addr").value.trim(), addr2 = $("#f-addr2").value.trim(), notes = $("#f-notes").value.trim();
+  const name = $("#f-name").value.trim(), addr = $("#f-addr").value.trim(), addr2 = $("#f-addr2").value.trim(), notes = $("#f-notes").value.trim();
+  const { barrio, comuna } = barrioText();
   const mode = document.querySelector('input[name="mode"]:checked').value, dom = mode === "Domicilio";
-  return {name, barrio, addr, addr2, notes, mode, dom};
+  return {name, barrio, comuna, addr, addr2, notes, mode, dom};
 }
 function validate(f){
-  $("#e-name").hidden = !!f.name; $("#e-barrio").hidden = !f.dom || !!f.barrio; $("#e-addr").hidden = !f.dom || !!f.addr;
+  $("#e-name").hidden = !!f.name; $("#e-addr").hidden = !f.dom || !!f.addr; $("#e-barrio").hidden = !f.dom || !!f.barrio;
   if (!f.name) { $("#f-name").focus(); return false; }
-  if (f.dom && !f.barrio) { $("#f-barrio").focus(); return false; }
   if (f.dom && !f.addr) { $("#f-addr").focus(); return false; }
+  if (f.dom && !f.barrio) { (isOther ? bOther : bIn).focus(); return false; }
   return true;
 }
 function setStep(review){
@@ -594,7 +709,7 @@ function setStep(review){
 }
 $("#toReview").addEventListener("click", () => {
   const f = readForm(); if (!validate(f)) return;
-  try { localStorage.setItem("vikingos-cliente", JSON.stringify({name:f.name, barrio:f.barrio, addr:f.addr, addr2:f.addr2})); } catch(e) {}
+  try { localStorage.setItem("vikingos-cliente", JSON.stringify({name:f.name, addr:f.addr, addr2:f.addr2, bsel: bSel ? {n:bSel.n, c:bSel.c} : null, botro: isOther ? bOther.value.trim() : "", bcom: comunaSel.value})); } catch(e) {}
   $("#preview").textContent = buildMsg(f); setStep(true); $("#r-title").focus?.();
 });
 $("#backBtn").addEventListener("click", () => setStep(false));
@@ -604,7 +719,7 @@ $("#sendWa").addEventListener("click", () => {
   const f = readForm(); if (!cart.length) return;
   window.open(`https://wa.me/${WHATSAPP}?text=${encodeURIComponent(buildMsg(f))}`, "_blank", "noopener");
 });
-function buildMsg({name, barrio, addr, addr2, notes, mode, dom}){
+function buildMsg({name, barrio, comuna, addr, addr2, notes, mode, dom}){
   const lines = [];
   cart.forEach(l => {
     const it = ITEMS[l.id];
@@ -621,7 +736,8 @@ function buildMsg({name, barrio, addr, addr2, notes, mode, dom}){
     "",
     `Nombre: ${name}`,
     `Entrega: ${mode}`,
-    ...(dom ? [`Barrio: ${barrio}`, `Dirección: ${addr}`] : []),
+    ...(dom ? [`Dirección: ${addr}`, `Barrio: ${barrio}`] : []),
+    ...(dom && comuna ? [`Comuna: ${comuna}`] : []),
     ...(dom && addr2 ? [`Dirección adicional: ${addr2}`] : []),
     ...(notes ? [`Comentarios: ${notes}`] : []),
     "",
