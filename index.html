@@ -108,7 +108,9 @@
   .thumb img{width:100%;height:100%;object-fit:cover}
   .vbadge{position:absolute;left:6px;top:6px;display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:99px;background:rgba(15,37,55,.85);color:#fff;font-size:12px;font-weight:800}
   .d-img.video{aspect-ratio:1;max-height:58dvh;margin:0 auto;width:100%;background:#111}
-  .d-img video{width:100%;height:100%;object-fit:cover;display:block;background:#111}
+  .vstack{position:absolute;inset:0;overflow:hidden;background:#111}
+  .vstack video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .25s ease}
+  .vstack video.on{opacity:1}
   .d-img{position:relative}
   .snd{position:absolute;left:10px;bottom:10px;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(15,37,55,.8);color:#fff}
   .add{position:absolute;right:10px;top:100px;min-width:44px;height:44px;padding:0 12px;display:flex;align-items:center;justify-content:center;gap:6px;border-radius:99px;background:var(--navy);color:#fff;font-weight:800;font-size:15px;box-shadow:0 4px 12px rgba(15,37,55,.3);transition:transform .15s var(--ease)}
@@ -338,7 +340,7 @@ const MENU = [
   { id:"salchipapas", name:"Salchipapas", note:"Gratinadas con queso fundido.", tile:"img/cat-salchipapas.webp", items:[
     { id:"s1", name:"Salchipapa gratinada sencilla", desc:"Papa a la francesa con salchicha, gratinada con queso y salsas.", price:12000, img:"img/salchi_sencilla" },
     { id:"s2", name:"Salchipapa gratinada con pollo", desc:"Papa a la francesa con salchicha y pollo, gratinada con queso y salsas.", price:16000, img:"img/salchi_pollo_real", video:[{src:"video/salchipapa-pollo.mp4", start:16}], focus:"50% 78%", poster:"video/salchipollo-real-poster.webp" },
-    { id:"s3", name:"Costipapa gratinada + bebida", desc:"Papa a la francesa con costilla, gratinada con queso y salsas.", inc:"1 bebida", price:20000, img:"img/costipapa", video:["video/costipapa-1.mp4","video/costipapa-2.mp4"], focus:"50% 70%", poster:"video/costipapa-real-poster.webp" },
+    { id:"s3", name:"Costipapa gratinada + bebida", desc:"Papa a la francesa con costilla, gratinada con queso y salsas.", inc:"1 bebida", price:20000, img:"img/costipapa", video:["video/costipapa-1.mp4",{src:"video/costipapa-2.mp4", start:0, end:4.4}], focus:"50% 74%", zoom:1.18, poster:"video/costipapa-real-poster.webp" },
   ]},
   { id:"bebidas", name:"Bebidas", note:"Bien frías.", tile:"img/cat-bebidas.webp", items:[
     { id:"b1", name:"Coronita", desc:"Cerveza Corona Extra, botella de 210 ml.", price:5000, img:"img/corona", contain:true },
@@ -429,24 +431,44 @@ function showMedia(it){
   box.classList.toggle("contain", !!it.contain);
   box.classList.toggle("video", !!it.video);
   if (!it.video) { box.innerHTML = `<img alt="" src="${it.img}.webp">`; return; }
-  let k = 0;
-  box.innerHTML = `<video muted playsinline autoplay preload="auto" poster="${it.poster}" style="object-position:${it.focus || "50% 50%"}" aria-label="Video de ${esc(it.name)}"></video><button class="snd" type="button" aria-label="Activar sonido" aria-pressed="false">${mute}</button>`;
-  const v = box.querySelector("video"), snd = box.querySelector(".snd");
-  const clip = i => typeof it.video[i] === "string" ? {src: it.video[i], start: 0} : it.video[i];
-  const play = () => {
-    const c = clip(k);
-    if (v.getAttribute("src") === c.src) { v.currentTime = c.start; v.play().catch(() => {}); return; }
-    v.src = c.src;
-    v.addEventListener("loadedmetadata", () => { v.currentTime = c.start; v.play().catch(() => {}); }, {once:true});
-  };
-  v.addEventListener("ended", () => { k = (k + 1) % it.video.length; play(); });
-  snd.addEventListener("click", () => {
-    v.muted = !v.muted; snd.innerHTML = v.muted ? mute : unmute;
-    snd.setAttribute("aria-label", v.muted ? "Activar sonido" : "Silenciar"); snd.setAttribute("aria-pressed", String(!v.muted));
+  const clips = it.video.map(c => typeof c === "string" ? {src:c, start:0} : c);
+  const style = `object-position:${it.focus || "50% 50%"};transform:scale(${it.zoom || 1})`;
+  box.innerHTML = `<div class="vstack" aria-label="Video de ${esc(it.name)}" role="img">
+      <video muted playsinline preload="auto" poster="${it.poster}" style="${style}" class="on"></video>
+      <video muted playsinline preload="auto" style="${style}"></video>
+    </div>
+    <button class="snd" type="button" aria-label="Activar sonido" aria-pressed="false">${mute}</button>`;
+  const [A, B] = box.querySelectorAll("video"), snd = box.querySelector(".snd");
+  let curV = A, nextV = B, k = 0, switching = false;
+  const load = (v, c) => new Promise(res => {
+    if (v.dataset.src === c.src && v.readyState >= 1) { v.currentTime = c.start; return res(); }
+    v.dataset.src = c.src; v.src = c.src;
+    v.addEventListener("loadedmetadata", () => { v.currentTime = c.start; res(); }, {once:true});
   });
-  if (reduce()) { v.removeAttribute("autoplay"); v.src = clip(0).src + "#t=" + clip(0).start; v.controls = true; } else play();
+  const advance = async () => {
+    if (switching) return; switching = true;
+    if (clips.length === 1) { curV.currentTime = clips[0].start; curV.play().catch(()=>{}); switching = false; return; }
+    k = (k + 1) % clips.length;
+    await load(nextV, clips[k]);
+    nextV.muted = curV.muted;
+    await nextV.play().catch(()=>{});
+    nextV.classList.add("on"); curV.classList.remove("on");
+    const old = curV; curV = nextV; nextV = old;
+    setTimeout(() => { old.pause(); load(old, clips[(k + 1) % clips.length]); switching = false; }, 260);
+  };
+  [A, B].forEach(v => {
+    v.addEventListener("ended", () => v === curV && advance());
+    v.addEventListener("timeupdate", () => { if (v !== curV) return; const c = clips[k], stop = c.end || (v.duration - 0.15); if (isFinite(stop) && v.currentTime >= stop) advance(); });
+  });
+  snd.addEventListener("click", () => {
+    const m = !curV.muted; A.muted = B.muted = m; snd.innerHTML = m ? mute : unmute;
+    snd.setAttribute("aria-label", m ? "Activar sonido" : "Silenciar"); snd.setAttribute("aria-pressed", String(!m));
+  });
+  if (reduce()) { A.controls = true; load(A, clips[0]); return; }
+  load(A, clips[0]).then(() => A.play().catch(()=>{}));
+  if (clips.length > 1) load(B, clips[1]);
 }
-const stopMedia = () => { const v = $("#d-img video"); if (v) { v.pause(); v.removeAttribute("src"); v.load(); } };
+const stopMedia = () => document.querySelectorAll("#d-img video").forEach(v => { v.pause(); v.removeAttribute("src"); v.load(); });
 
 /* ===== Detalle de producto ===== */
 const sheet = $("#sheet"); let cur = null, qty = 1, lastFocus = null;
