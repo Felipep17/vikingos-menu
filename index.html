@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Vikingos Bar and Food · Menú</title>
 <meta name="description" content="Menú de Vikingos Bar and Food: alitas en BBQ o miel mostaza, salchipapas gratinadas y bebidas. Pide por WhatsApp.">
-<meta name="theme-color" content="#0D2131">
+<meta name="theme-color" content="#141010">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Vikingos Bar and Food · Menú">
 <meta property="og:description" content="Alitas en BBQ o miel mostaza, salchipapas gratinadas y bebidas. Pide por WhatsApp.">
@@ -18,10 +18,10 @@
 <link rel="preload" as="image" href="img/banner-alitas.webp">
 <style>
   :root{
-    --board:#0D2131; --board-2:#12293C; --board-3:#183449;
-    --cream:#F4EBDD; --cream-2:#C9BFAE; --rule:rgba(244,235,221,.16);
-    --amber:#F2A93B; --amber-2:#E0901C;
-    --paper:#FBF6EC; --paper-line:#E6DCCB; --ink:#13202C; --ink-2:#5B6570;
+    --board:#141010; --board-2:#1F1817; --board-3:#2A1E1C;
+    --cream:#FFF4E8; --cream-2:#CDBDB0; --rule:rgba(255,244,232,.16);
+    --amber:#E8392B; --amber-2:#C42A1E;
+    --paper:#FBF6EC; --paper-line:#E6DCCB; --ink:#1A1212; --ink-2:#6A5A55;
     --bbq:#6E2A12; --mostaza:#E2A12A; --wa:#128C4A;
     --display:"Bebas Neue",Impact,"Arial Narrow",sans-serif;
     --cond:"Barlow Condensed","Arial Narrow",sans-serif;
@@ -55,7 +55,7 @@
   .toc a span{font-family:var(--cond);font-size:14px;font-weight:600;color:var(--amber);letter-spacing:.12em}
 
   /* ---- Barra fija ---- */
-  .tabs{position:sticky;top:0;z-index:20;background:rgba(13,33,49,.96);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--rule);margin-top:20px}
+  .tabs{position:sticky;top:0;z-index:20;background:rgba(20,16,16,.96);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-bottom:1px solid var(--rule);margin-top:20px}
   .tabs-inner{display:flex;align-items:center;gap:4px;padding:0 8px;max-width:760px;margin:0 auto}
   .tabs ul{position:relative;flex:1;display:flex;list-style:none;overflow-x:auto;scrollbar-width:none}
   .tabs ul::-webkit-scrollbar{display:none}
@@ -76,7 +76,7 @@
   main section{padding-bottom:28px}
   .banner{position:relative;aspect-ratio:12/5;overflow:hidden;background:var(--board-2)}
   .banner img{width:100%;height:100%;object-fit:cover}
-  .banner::after{content:"";position:absolute;inset:-1px;background:linear-gradient(180deg,rgba(13,33,49,0) 30%,rgba(13,33,49,.75) 72%,var(--board) 100%)}
+  .banner::after{content:"";position:absolute;inset:-1px;background:linear-gradient(180deg,rgba(20,16,16,0) 30%,rgba(20,16,16,.75) 72%,var(--board) 100%)}
   .sec-head{position:relative;z-index:1;margin-top:-58px;padding:0 16px 4px}
   .sec-head .num{font-family:var(--cond);font-weight:700;font-size:16px;letter-spacing:.2em;color:var(--amber)}
   .sec-head h2{font-family:var(--display);font-weight:400;font-size:clamp(54px,14vw,72px);line-height:.9;letter-spacing:.02em}
@@ -86,7 +86,7 @@
   .sauces b{font-family:var(--cond);font-weight:700;font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
   .sauces span{display:inline-flex;align-items:center;gap:8px;font-family:var(--cond);font-weight:600;font-size:19px}
   .sauces small{flex-basis:100%;font-size:15px;color:var(--cream-2)}
-  .dot{width:18px;height:18px;border-radius:50%;flex:none;box-shadow:inset 0 -3px 0 rgba(0,0,0,.2),0 0 0 2px rgba(244,235,221,.18)}
+  .dot{width:18px;height:18px;border-radius:50%;flex:none;box-shadow:inset 0 -3px 0 rgba(0,0,0,.2),0 0 0 2px rgba(255,244,232,.18)}
   .dot.bbq{background:var(--bbq)} .dot.mostaza{background:var(--mostaza)}
 
   /* Ítems estilo carta */
@@ -99,7 +99,7 @@
   .vbadge{position:absolute;left:0;bottom:0;display:inline-flex;align-items:center;gap:4px;padding:3px 7px;background:var(--amber);color:var(--board);font-family:var(--cond);font-weight:700;font-size:13px;letter-spacing:.06em;text-transform:uppercase}
   .line{display:flex;align-items:baseline;gap:8px;text-align:left;width:100%}
   .line h3{font-family:var(--cond);font-weight:700;font-size:21px;line-height:1.1;text-transform:uppercase;letter-spacing:.02em}
-  .line .lead{flex:1;min-width:16px;border-bottom:2px dotted rgba(244,235,221,.35);transform:translateY(-5px)}
+  .line .lead{flex:1;min-width:16px;border-bottom:2px dotted rgba(255,244,232,.35);transform:translateY(-5px)}
   .line .pr{font-family:var(--display);font-size:26px;letter-spacing:.03em;color:var(--amber);white-space:nowrap;font-variant-numeric:tabular-nums}
   .desc{color:var(--cream-2);font-size:15px;margin-top:4px;text-wrap:pretty}
   .inc{font-family:var(--cond);font-size:16px;margin-top:4px;color:var(--cream)}
@@ -151,17 +151,17 @@
   /* ---- Hojas en papel ---- */
   dialog{position:fixed;inset:auto 0 0 0;margin:0 auto;width:100%;max-width:560px;max-height:92dvh;border:none;padding:0;background:var(--paper);color:var(--ink);border-radius:8px 8px 0 0;overflow:auto;overscroll-behavior:contain}
   dialog[open]{animation:up .28s var(--ease)}
-  dialog::backdrop{background:rgba(5,14,22,.72)}
+  dialog::backdrop{background:rgba(10,6,6,.75)}
   @keyframes up{from{transform:translateY(32px);opacity:0}to{transform:none;opacity:1}}
   @media (min-width:640px){ dialog{inset:0;margin:auto;border-radius:6px} }
   html:has(dialog[open]){overflow:hidden}
   dialog:not([open]){display:none}
-  .dlg-fallback{display:block;z-index:50;box-shadow:0 0 0 100vmax rgba(5,14,22,.72)}
+  .dlg-fallback{display:block;z-index:50;box-shadow:0 0 0 100vmax rgba(10,6,6,.75)}
   body.locked{overflow:hidden}
   .close{position:absolute;top:10px;right:10px;z-index:3;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:rgba(251,246,236,.95);color:var(--ink);box-shadow:0 2px 8px rgba(0,0,0,.25)}
   .d-img{position:relative;aspect-ratio:16/10;background:#000}
   .d-img img{width:100%;height:100%;object-fit:cover}
-  .d-img.contain{background:#13293B}
+  .d-img.contain{background:#1F1817}
   .d-img.contain img{object-fit:contain}
   .d-img.video{aspect-ratio:1;max-height:58dvh;margin:0 auto;width:100%;background:#111}
   .vstack{position:absolute;inset:0;overflow:hidden;background:#111}
@@ -171,7 +171,7 @@
   .sheet-body h3{font-family:var(--display);font-weight:400;font-size:38px;line-height:.95;letter-spacing:.02em;padding-right:40px}
   .sheet-body .desc{color:var(--ink-2)}
   .sheet-body .inc{color:var(--ink)}
-  .sheet-body .inc b{color:#94560A}
+  .sheet-body .inc b{color:#A8261C}
   .group{margin-top:18px}
   .group-title{font-family:var(--cond);font-weight:700;font-size:18px;text-transform:uppercase;letter-spacing:.06em}
   .group-title small{display:block;font-family:var(--body);font-weight:400;text-transform:none;letter-spacing:0;color:var(--ink-2);font-size:14px}
@@ -181,7 +181,7 @@
   .opt{position:relative}
   .opt input{position:absolute;opacity:0;inset:0;margin:0}
   .opt label{display:flex;align-items:center;gap:8px;min-height:46px;padding:0 12px;border:1.5px solid var(--paper-line);border-radius:4px;background:#fff;font-family:var(--cond);font-weight:700;font-size:17px;cursor:pointer;transition:border-color .15s,background .15s}
-  .opt input:checked + label{border-color:var(--ink);background:#FFF3DC;box-shadow:inset 0 0 0 1px var(--ink)}
+  .opt input:checked + label{border-color:var(--ink);background:#FCE4E0;box-shadow:inset 0 0 0 1px var(--ink)}
   .opt input:focus-visible + label{outline:3px solid var(--amber);outline-offset:2px}
   .stepper{display:inline-flex;align-items:center;border:1.5px solid var(--paper-line);border-radius:4px;background:#fff}
   .stepper button{width:44px;height:44px;display:grid;place-items:center;font-size:22px;font-weight:700}
@@ -215,8 +215,8 @@
   .sugg li{display:flex;justify-content:space-between;align-items:center;gap:10px;min-height:46px;padding:8px 14px;cursor:pointer;border-bottom:1px solid var(--paper-line)}
   .sugg li:last-child{border-bottom:none}
   .sugg li small{color:var(--ink-2);font-size:13px;white-space:nowrap}
-  .sugg li[aria-selected="true"],.sugg li:hover{background:#FFF3DC}
-  .sugg li.other{font-weight:600;color:#94560A}
+  .sugg li[aria-selected="true"],.sugg li:hover{background:#FCE4E0}
+  .sugg li.other{font-weight:600;color:#A8261C}
   .sugg mark{background:none;color:inherit;font-weight:700;text-decoration:underline;text-underline-offset:2px}
   .hint{font-size:14px;color:var(--ink-2);margin-top:6px}
   .hint.ok{color:#0E6B37;font-weight:600}
